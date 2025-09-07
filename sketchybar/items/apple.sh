@@ -11,6 +11,7 @@ sketchybar --add item apple.logo left \
                  popup.background.border_width=2 \
                  popup.background.corner_radius=5 \
                  popup.background.color=$SECONDARY_COLOR \
+                 popup.blur_radius=30 \
                  popup.background.border_color=$BAR_COLOR \
            --add item apple.preferences popup.apple.logo \
            --set apple.preferences icon=􀺽 \
