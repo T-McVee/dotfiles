@@ -8,8 +8,9 @@ source "$CONFIG_DIR/colors.sh" # Loads all defined colors
 
 if [ $SELECTED = true ]; then
   sketchybar --set $NAME background.drawing=on \
-                         label.color=$ACCENT_COLOR \
+                         label.color=$WHITE \
                          icon.color=$ACCENT_COLOR \
+                         background.color=$BAR_COLOR_TRANSPARENT
 
 
 else
