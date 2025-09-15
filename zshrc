@@ -20,3 +20,5 @@ export PATH="$PATH:$HOME/${pipenv_path}"
 export PATH="$PATH:/Users/tim/.local/bin"
 
 export PATH="$HOME/.local/bin:$PATH"
+
+eval "$(starship init zsh)"

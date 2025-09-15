@@ -20,3 +20,5 @@ export PATH="/Users/tim/.codeium/windsurf/bin:$PATH"
 
 PATH=~/.console-ninja/.bin:$PATH
 export PATH="$HOME/.local/bin:$PATH"
+
+eval "$(starship init zsh)"
