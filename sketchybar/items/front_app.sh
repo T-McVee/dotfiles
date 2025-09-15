@@ -6,5 +6,6 @@ sketchybar --add item front_app left \
                   icon.font="sketchybar-app-font:Regular:14.0" \
                   label.color=$WHITE \
                   label.padding_left=0 \
-                  script="$PLUGIN_DIR/front_app.sh"            \
+                  script="$PLUGIN_DIR/front_app.sh" \
+                  associated_display=1 \
            --subscribe front_app front_app_switched

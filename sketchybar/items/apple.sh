@@ -13,17 +13,19 @@ sketchybar --add item apple.logo left \
                  popup.background.color=$SECONDARY_COLOR \
                  popup.blur_radius=30 \
                  popup.background.border_color=$BAR_COLOR \
+                 associated_display=1 \
            --add item apple.preferences popup.apple.logo \
            --set apple.preferences icon=􀺽 \
                  label="Preferences" \
                  label.color=$BLACK \
                  icon.color=$BLACK \
+                 associated_display=1 \
                  click_script="open -a 'System Preferences'; \
                                sketchybar -m --set apple.logo popup.drawing=off" \
            --add item apple.lock popup.apple.logo \
            --set apple.lock icon=􀒳 \
-                            label="Lock Screen" \
-                            label.color=$BLACK \
-                            icon.color=$BLACK \
-                            click_script="pmset displaysleepnow;                           
-                                          sketchybar -m --set apple.logo popup.drawing=off"
+                 label="Lock Screen" \
+                 label.color=$BLACK \
+                 icon.color=$BLACK \
+                 click_script="pmset displaysleepnow;                           
+                 sketchybar -m --set apple.logo popup.drawing=off"

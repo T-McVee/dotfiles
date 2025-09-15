@@ -18,6 +18,7 @@ sketchybar --add       event           spotify_change $SPOTIFY_EVENT      \
                                        popup.background.color=$SECONDARY_COLOR \
                                        popup.blur_radius=30 \
                                        icon.drawing=off                   \
+                                       associated_display=1 \
                                                                           \
            --add       item            spotify.back popup.spotify.name    \
            --set       spotify.back    icon=􀊎                             \
@@ -25,6 +26,7 @@ sketchybar --add       event           spotify_change $SPOTIFY_EVENT      \
                                        icon.padding_right=5               \
                                        script="$PLUGIN_DIR/spotify.sh"    \
                                        label.drawing=off                  \
+                                       associated_display=1               \
            --subscribe spotify.back    mouse.clicked                      \
                                                                           \
            --add       item            spotify.play popup.spotify.name    \
@@ -34,6 +36,7 @@ sketchybar --add       event           spotify_change $SPOTIFY_EVENT      \
                                        updates=on                         \
                                        label.drawing=off                  \
                                        script="$PLUGIN_DIR/spotify.sh"    \
+                                       associated_display=1         \
            --subscribe spotify.play    mouse.clicked spotify_change       \
                                                                           \
            --add       item            spotify.next popup.spotify.name    \
@@ -41,6 +44,7 @@ sketchybar --add       event           spotify_change $SPOTIFY_EVENT      \
                                        icon.padding_left=5                \
                                        icon.padding_right=10              \
                                        label.drawing=off                  \
+                                       associated_display=1               \
                                        script="$PLUGIN_DIR/spotify.sh"    \
            --subscribe spotify.next    mouse.clicked                      \
                                                                           \
@@ -50,6 +54,7 @@ sketchybar --add       event           spotify_change $SPOTIFY_EVENT      \
                                        icon.padding_left=5                \
                                        icon.padding_right=5               \
                                        label.drawing=off                  \
+                                       associated_display=1               \
                                        script="$PLUGIN_DIR/spotify.sh"    \
            --subscribe spotify.shuffle mouse.clicked                      \
                                                                           \
@@ -59,5 +64,6 @@ sketchybar --add       event           spotify_change $SPOTIFY_EVENT      \
                                        icon.padding_left=5                \
                                        icon.padding_right=5               \
                                        label.drawing=off                  \
+                                       associated_display=1               \
                                        script="$PLUGIN_DIR/spotify.sh"    \
            --subscribe spotify.repeat  mouse.clicked
