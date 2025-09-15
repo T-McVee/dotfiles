@@ -23,6 +23,7 @@ sketchybar --bar position=top \
                 color=$BAR_COLOR \
                 padding_left=15 \
                 padding_right=15 \
+                display="main" \
                 topmost=window
 
 ##### Changing Defaults #####
