@@ -1,0 +1,22 @@
+local brew_path="/opt/homebrew/bin"
+local brew_opt_path="/opt/homebrew/opt"
+local nvm_path="$HOME/.nvm"
+
+
+export PATH="${brew_path}:${PATH}"
+export NVM_DIR="${nvm_path}"
+
+# pnpm alias
+alias pn=pnpm
+
+export PATH=$PATH:/Users/tim/.bin/mr-clean
+alias mr-clean="mr-clean.zsh"
+
+[ -s "${brew_opt_path}/nvm/nvm.sh" ] && \. "${brew_opt_path}/nvm/nvm.sh"  # This loads nvm
+[ -s "${brew_opt_path}/nvm/etc/bash_completion.d/nvm" ] && \. "${brew_opt_path}/nvm/etc/bash_completion.d/nvm"  # This loads nvm
+
+# Added by Windsurf
+export PATH="/Users/tim/.codeium/windsurf/bin:$PATH"
+
+PATH=~/.console-ninja/.bin:$PATH
+export PATH="$HOME/.local/bin:$PATH"
