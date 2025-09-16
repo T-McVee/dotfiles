@@ -84,6 +84,26 @@ right = ['P2419H']
     if.window-title-regex-substring = 'developer tools'
     run = ['layout tiling', 'move-node-to-workspace right']
 
+# Open Slack instances in workspace 1
+[[on-window-detected]]
+    if.app-id = 'com.tinyspeck.slackmacgap'
+    run = ['move-node-to-workspace 1']
+
+# Open Teams instances in workspace 1
+[[on-window-detected]]
+    if.app-id = 'com.microsoft.teams2'
+    run = ['move-node-to-workspace 1']
+
+# Open Mail instances in workspace 3
+[[on-window-detected]]
+    if.app-id = 'com.apple.mail'
+    run = ['move-node-to-workspace 3']
+
+# Open Outlook instances in workspace 3
+[[on-window-detected]]
+    if.app-id = 'com.microsoft.Outlook'
+    run = ['move-node-to-workspace 3']
+
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -139,9 +159,9 @@ right = ['P2419H']
     alt-equal = 'resize smart +50'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
-    alt-1 = 'workspace 1'
-    alt-2 = 'workspace 2'
-    alt-3 = 'workspace 3'
+    alt-8 = 'workspace 1'
+    alt-9 = 'workspace 2'
+    alt-0 = 'workspace 3'
     alt-u = 'workspace left'
     alt-i = 'workspace right'
     
@@ -169,9 +189,9 @@ right = ['P2419H']
     # alt-z = 'workspace Z'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
-    alt-shift-1 = 'move-node-to-workspace 1'
-    alt-shift-2 = 'move-node-to-workspace 2'
-    alt-shift-3 = 'move-node-to-workspace 3'
+    alt-shift-8 = 'move-node-to-workspace 1'
+    alt-shift-9 = 'move-node-to-workspace 2'
+    alt-shift-0 = 'move-node-to-workspace 3'
     alt-shift-u = 'move-node-to-workspace left'
     alt-shift-i = 'move-node-to-workspace right'
     # alt-shift-4 = 'move-node-to-workspace 4'
