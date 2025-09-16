@@ -4,7 +4,7 @@
 # You can use it to add commands that run after AeroSpace startup.
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
 after-startup-command = [
-    'exec-and-forget borders active_color=0xff95DFFE inactive_color=0x20000000 width=5.0'
+    'exec-and-forget borders active_color=0xeeDECDB5 inactive_color=0x20000000 width=5.0'
 ]
 
 # Start AeroSpace at login
@@ -60,14 +60,30 @@ outer.bottom =     10
 outer.top =        [
     { monitor."1" = 10 },
     { monitor."3" = 10 },
-    { monitor."built-in" = 0 },
+    { monitor."built-in" = 2 },
     0
 ]
 outer.right =      10
 
 [workspace-to-monitor-force-assignment]
-left = 1
-right = 3
+left = ['U28H75x']
+right = ['P2419H']
+
+# Open new Cursor instances in the left workspace
+[[on-window-detected]]
+    if.app-id = 'com.todesktop.230313mzl4w4u92'
+    run = ['move-node-to-workspace left']
+
+# Open Ghostty instances in the left workspace
+[[on-window-detected]]
+    if.app-id = 'com.mitchellh.ghostty'
+    run = ['move-node-to-workspace left']
+
+# Open undocked Devtools instances in the right workspace
+[[on-window-detected]]
+    if.window-title-regex-substring = 'developer tools'
+    run = ['layout tiling', 'move-node-to-workspace right']
+
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -126,8 +142,8 @@ right = 3
     alt-1 = 'workspace 1'
     alt-2 = 'workspace 2'
     alt-3 = 'workspace 3'
-    alt-cmd-h = 'workspace left'
-    alt-cmd-l = 'workspace right'
+    alt-u = 'workspace left'
+    alt-i = 'workspace right'
     
     # alt-a = 'workspace A' # In your config, you can drop workspace bindings that you don't need
     # alt-b = 'workspace B'
@@ -156,8 +172,8 @@ right = 3
     alt-shift-1 = 'move-node-to-workspace 1'
     alt-shift-2 = 'move-node-to-workspace 2'
     alt-shift-3 = 'move-node-to-workspace 3'
-    alt-cmd-shift-h = 'move-node-to-workspace left'
-    alt-cmd-shift-l = 'move-node-to-workspace right'
+    alt-shift-u = 'move-node-to-workspace left'
+    alt-shift-i = 'move-node-to-workspace right'
     # alt-shift-4 = 'move-node-to-workspace 4'
     # alt-shift-5 = 'move-node-to-workspace 5'
     # alt-shift-6 = 'move-node-to-workspace 6'
