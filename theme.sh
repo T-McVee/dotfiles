@@ -1,0 +1,19 @@
+#!/bin/bash
+
+export WHITE=0xffffffff
+export BLACK=0xff0D2C6E
+
+# -- Tropical Haze --
+export BAR_COLOR=0x40000000
+export BAR_COLOR_TRANSPARENT=0x20000000
+
+export PRIMARY_COLOR=0xffBEOFD
+export PRIMARY_SOFT_COLOR=0xffD7F3FE
+
+export SECONDARY_COLOR=0xffE8C79C
+export SECONDARY_SOFT_COLOR=0xffFCF6E4
+
+export ACCENT_ONE_COLOR=0xffFF875C
+export ACCENT_TWO_COLOR=0xff84B7B1
+
+export BG_ONE_COLOR=0xff667E88
