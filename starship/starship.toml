@@ -7,7 +7,7 @@ $directory\
 [](fg:#FF875C bg:#DECDB5)\
 $git_branch\
 $git_status\
-[](fg:#DECDB5 bg:#D7F3FE)\
+[](fg:#E8C79C bg:#D7F3FE)\
 $c\
 $elixir\
 $elm\
@@ -20,9 +20,7 @@ $nodejs\
 $nim\
 $rust\
 $scala\
-[](fg:#D7F3FE bg:#9BE0FD)\
-$docker_context\
-[](fg:#9BE0FD bg:#33658A)\
+[](fg:#D7F3FE bg:#33658A)\
 $time\
 [ ](fg:#33658A)\
 """
