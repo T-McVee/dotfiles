@@ -56,7 +56,14 @@ automatically-unhide-macos-hidden-apps = false
 inner.horizontal = 10
 inner.vertical =   10
 outer.left =       10
-outer.bottom =     10
+outer.bottom =     [
+    { monitor."U28H75x" = 70 },
+    { monitor."P2419H" = 70 },
+    { monitor."built-in" = 10 },
+    { monitor."1" = 160 },
+    { monitor."3" = 160 },
+    10,
+]
 outer.top =        [
     { monitor."1" = 10 },
     { monitor."3" = 10 },
@@ -66,8 +73,8 @@ outer.top =        [
 outer.right =      10
 
 [workspace-to-monitor-force-assignment]
-left = ['U28H75x']
-right = ['P2419H']
+left = ['U28H75x', 'U2415', 1]
+right = ['P2419H', 3]
 
 # Open new Cursor instances in the left workspace
 [[on-window-detected]]
