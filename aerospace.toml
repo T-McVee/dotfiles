@@ -111,6 +111,10 @@ right = ['P2419H', 3]
     if.app-id = 'com.microsoft.Outlook'
     run = ['move-node-to-workspace 3']
 
+# Open Spotify instance in floating mode
+[[on-window-detected]]
+    if.app-id = 'com.spotify.client'
+    run = ['layout floating']
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
