@@ -6,10 +6,7 @@ $os\
 $username\
 [](bg:#D4E9E6 fg:#89B4C5)\
 $directory\
-[](fg:#D4E9E6 bg:#FDD79B)\
-$git_branch\
-$git_status\
-[](fg:#FDD79B bg:#BC7E62)\
+[](fg:#D4E9E6 bg:#BC7E62)\
 $c\
 $elixir\
 $elm\
