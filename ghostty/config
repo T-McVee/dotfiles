@@ -1,13 +1,14 @@
 # Background settings
 # Background variants from original to sky blue
+background = 23465f
 # background = 667E88 
 # background = 6A8A9A  
-background = 6E96AC  
+# background = 6E96AC  
 # background = 72A2BE  
 # background = 76AED0  
 # background = 7ABAFF  
-background-opacity = 0.48
+background-opacity = 0.8
 background-blur = 85
 
 #Foreground settings
-foreground = 000000
+foreground = CDB79E

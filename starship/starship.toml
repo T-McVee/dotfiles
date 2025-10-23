@@ -32,8 +32,8 @@ add_newline = true
 # and use the os module below
 [username]
 show_always = true
-style_user = "bg:#89B4C5"
-style_root = "bg:#89B4C5"
+style_user = "bg:#89B4C5 fg:#001F3F"
+style_root = "bg:#89B4C5 fg:#001F3F"
 format = '[$user ]($style)'
 disabled = false
 
@@ -44,7 +44,7 @@ style = "bg:#84B7B1"
 disabled = true # Disabled by default
 
 [directory]
-style = "bg:#D4E9E6"
+style = "bg:#D4E9E6 fg:#001F3F"
 format = "[ $path ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
