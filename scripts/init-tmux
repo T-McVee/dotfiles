@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Create a new tmux session with three windows
+# Usage: ./init-tmux <session-name>
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <session-name>"
+    exit 1
+fi
+
+SESSION_NAME="$1"
+WORKING_DIR="$(pwd)"
+
+# Check if session already exists
+if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
+    echo "Session '$SESSION_NAME' already exists. Switching..."
+    if [ -n "$TMUX" ]; then
+        tmux switch-client -t "$SESSION_NAME"
+    else
+        tmux attach-session -t "$SESSION_NAME"
+    fi
+    exit 0
+fi
+
+# Create new session with first window named 'dev-server'
+tmux new-session -d -s "$SESSION_NAME" -n "dev-server" -c "$WORKING_DIR"
+
+# Create second window named 'git'
+tmux new-window -t "$SESSION_NAME" -n "git" -c "$WORKING_DIR"
+
+# Create third window named 'agent'
+tmux new-window -t "$SESSION_NAME" -n "agent" -c "$WORKING_DIR"
+
+# Select the first window
+tmux select-window -t "$SESSION_NAME:dev-server"
+
+# Attach or switch to the session
+if [ -n "$TMUX" ]; then
+    # Already inside tmux, switch to the new session
+    tmux switch-client -t "$SESSION_NAME"
+else
+    # Not in tmux, attach to the session
+    tmux attach-session -t "$SESSION_NAME"
+fi
