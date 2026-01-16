@@ -130,7 +130,9 @@ keymap = [
 	{ on = [ "g", "<Space>" ], run = "cd --interactive", desc = "Jump interactively" },
 	{ on = [ "g", "f" ],       run = "follow",           desc = "Follow hovered symlink" },
   { on = [ "g", "p" ],       run = "cd ~/Documents/Projects",       desc = "Jump to projects" },
-  { on = [ "g", "c" ],       run = "cd ~/dotfiles",       desc = "Jump to dotfiles" },
+  { on = [ "g", "D" ],       run = "cd ~/dotfiles",       desc = "Jump to dotfiles" },
+  { on = [ "g", "F" ],       run = "cd ~/Documents/Projects/eHealth/00660-ehealth-finance-tab",       desc = "Jump to Finance Tab" },
+  { on = [ "g", "R" ],       run = "cd ~/Documents/Projects/eHealth/00912-Report-Once-Solution",       desc = "Jump to ROS" },
 
 	# Tabs
 	{ on = "t", run = "tab_create --current", desc = "Create a new tab with CWD" },
