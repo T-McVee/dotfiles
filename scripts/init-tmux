@@ -4,8 +4,8 @@
 # Usage: ./init-tmux <session-name>
 
 if [ -z "$1" ]; then
-    echo "Usage: $0 <session-name>"
-    exit 1
+  echo "Usage: $0 <session-name>"
+  exit 1
 fi
 
 SESSION_NAME="$1"
@@ -13,32 +13,44 @@ WORKING_DIR="$(pwd)"
 
 # Check if session already exists
 if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
-    echo "Session '$SESSION_NAME' already exists. Switching..."
-    if [ -n "$TMUX" ]; then
-        tmux switch-client -t "$SESSION_NAME"
-    else
-        tmux attach-session -t "$SESSION_NAME"
-    fi
-    exit 0
+  echo "Session '$SESSION_NAME' already exists. Switching..."
+  if [ -n "$TMUX" ]; then
+    tmux switch-client -t "$SESSION_NAME"
+  else
+    tmux attach-session -t "$SESSION_NAME"
+  fi
+  exit 0
 fi
 
-# Create new session with first window named 'dev-server'
-tmux new-session -d -s "$SESSION_NAME" -n "dev-server" -c "$WORKING_DIR"
+# Create new session with first window named 'repo'
+tmux new-session -d -s "$SESSION_NAME" -n "repo" -c "$WORKING_DIR"
 
-# Create second window named 'git'
-tmux new-window -t "$SESSION_NAME" -n "git" -c "$WORKING_DIR"
+# Split repo window: right sidebar (40% width)
+tmux split-window -t "$SESSION_NAME:repo" -h -l 30% -c "$WORKING_DIR"
 
-# Create third window named 'agent'
-tmux new-window -t "$SESSION_NAME" -n "agent" -c "$WORKING_DIR"
+# Split the right pane vertically into two stacked panes
+tmux split-window -t "$SESSION_NAME:repo.1" -v -l 20% -c "$WORKING_DIR"
+
+# Launch nvim in the primary left pane
+tmux send-keys -t "$SESSION_NAME:repo.0" 'nvim .' Enter
+
+# Launch Claude Code in the top-right sidebar pane
+tmux send-keys -t "$SESSION_NAME:repo.1" 'claude' Enter
+
+# Focus the primary left pane
+tmux select-pane -t "$SESSION_NAME:repo.0"
+
+# Create second window named 'dev-server'
+tmux new-window -t "$SESSION_NAME" -n "dev-server" -c "$WORKING_DIR"
 
 # Select the first window
-tmux select-window -t "$SESSION_NAME:dev-server"
+tmux select-window -t "$SESSION_NAME:repo"
 
 # Attach or switch to the session
 if [ -n "$TMUX" ]; then
-    # Already inside tmux, switch to the new session
-    tmux switch-client -t "$SESSION_NAME"
+  # Already inside tmux, switch to the new session
+  tmux switch-client -t "$SESSION_NAME"
 else
-    # Not in tmux, attach to the session
-    tmux attach-session -t "$SESSION_NAME"
+  # Not in tmux, attach to the session
+  tmux attach-session -t "$SESSION_NAME"
 fi
