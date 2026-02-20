@@ -1,15 +1,22 @@
 #!/bin/bash
 
 # Create a new tmux session with three windows
-# Usage: ./init-tmux <session-name>
+# Usage: ./init-tmux <session-name> [status-bar-color]
 
 if [ -z "$1" ]; then
-  echo "Usage: $0 <session-name>"
+  echo "Usage: $0 <session-name> [status-bar-color]"
   exit 1
 fi
 
 SESSION_NAME="$1"
 WORKING_DIR="$(pwd)"
+
+if [ -n "$2" ]; then
+  STATUS_COLOR="$2"
+else
+  HASH=$(printf '%s' "$SESSION_NAME" | md5 -q | head -c 6)
+  STATUS_COLOR="#$HASH"
+fi
 
 # Check if session already exists
 if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
@@ -24,6 +31,9 @@ fi
 
 # Create new session with first window named 'repo'
 tmux new-session -d -s "$SESSION_NAME" -n "repo" -c "$WORKING_DIR"
+
+# Set a unique status bar color for this session
+tmux set-option -t "$SESSION_NAME" status-bg "$STATUS_COLOR"
 
 # Split repo window: right sidebar (40% width)
 tmux split-window -t "$SESSION_NAME:repo" -h -l 30% -c "$WORKING_DIR"
