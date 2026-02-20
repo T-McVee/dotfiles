@@ -1,3 +1,10 @@
+# OPENSPEC:START
+# OpenSpec shell completions configuration
+fpath=("/Users/tim/.zsh/completions" $fpath)
+autoload -Uz compinit
+compinit
+# OPENSPEC:END
+
 local brew_path="/opt/homebrew/bin"
 local brew_opt_path="/opt/homebrew/opt"
 local nvm_path="$HOME/.nvm"
