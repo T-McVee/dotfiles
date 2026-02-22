@@ -41,4 +41,6 @@ function y() {
 	rm -f -- "$tmp"
 }
 
+export PATH="$PATH:/Applications/Ghostty.app/Contents/MacOS"
+
 export PATH="$PATH:$HOME/dotfiles/scripts"
