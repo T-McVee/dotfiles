@@ -1,14 +1,38 @@
-# Background settings
-# Background variants from original to sky blue
-background = 193143
-# background = 667E88 
-# background = 6A8A9A  
-# background = 6E96AC  
-# background = 72A2BE  
-# background = 76AED0  
-# background = 7ABAFF  
-background-opacity = 0.86
+# Opacity settings
+background-opacity = 0.90
 background-blur = 85
 
-#Foreground settings
-foreground = dacab8
+# Desert Oasis Night Theme
+
+# Background and foreground
+background = #142735
+foreground = #F5E8D8
+
+# Cursor
+cursor-color = #E8C48A
+cursor-text = #142735
+
+# Selection
+selection-background = #2A4A5F
+selection-foreground = #F5E8D8
+
+# Normal colors (0-7)
+palette = 0=#1F3A4F
+palette = 1=#E89B7D
+palette = 2=#7DC39B
+palette = 3=#F0C878
+palette = 4=#8BB3D9
+palette = 5=#D99B8B
+palette = 6=#7BC3C3
+palette = 7=#F5E8D8
+
+# Bright colors (8-15)
+palette = 8=#7D99B5
+palette = 9=#F0B099
+palette = 10=#99D9B5
+palette = 11=#FFD98F
+palette = 12=#A3C9E8
+palette = 13=#E8B5A8
+palette = 14=#99D9D9
+palette = 15=#FFF5E8
+
