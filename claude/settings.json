@@ -1,6 +1,9 @@
 {
   "skipDangerousModePermissionPrompt": true,
   "model": "opus",
+  "enabledPlugins": {
+    "beads@beads-marketplace": true
+  },
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
