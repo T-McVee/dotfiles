@@ -189,9 +189,32 @@ hi("NeoTreeDirectoryIcon", { fg = colors.info })
 hi("NeoTreeDirectoryName", { fg = colors.info })
 hi("NeoTreeFileName", { fg = colors.fg })
 hi("NeoTreeFileNameOpened", { fg = colors.sand })
-hi("NeoTreeGitAdded", { fg = colors.success })
+hi("NeoTreeGitAdded", { fg = colors.bright_green }) -- Changed from colors.success
 hi("NeoTreeGitModified", { fg = colors.warning })
 hi("NeoTreeGitDeleted", { fg = colors.error })
+hi("NeoTreeGitUntracked", { fg = colors.bright_green }) -- Added for untracked files
+hi("NeoTreeGitIgnored", { fg = colors.comment }) -- Added for ignored files
+hi("NeoTreeGitConflict", { fg = colors.bright_coral }) -- Added for conflicts
+hi("NeoTreeGitUnstaged", { fg = colors.warning }) -- Added for unstaged changes
+hi("NeoTreeGitStaged", { fg = colors.bright_green }) -- Added for staged files
+-- hi("NeoTreeNormal", { fg = colors.fg, bg = colors.bg })
+-- hi("NeoTreeNormalNC", { fg = colors.fg, bg = colors.bg })
+-- hi("NeoTreeDirectoryIcon", { fg = colors.info })
+-- hi("NeoTreeDirectoryName", { fg = colors.info })
+-- hi("NeoTreeFileName", { fg = colors.fg })
+-- hi("NeoTreeFileNameOpened", { fg = colors.sand })
+-- hi("NeoTreeGitAdded", { fg = colors.success })
+-- hi("NeoTreeGitModified", { fg = colors.warning })
+-- hi("NeoTreeGitDeleted", { fg = colors.error })
+
+-- Snacks Explorer
+hi("SnacksPickerPathHidden", { fg = colors.copper })
+hi("SnacksPickerPathIgnored", { fg = colors.copper })
+hi("SnacksPickerGitStatusUntracked", { fg = colors.bright_green })
+hi("SnacksPickerGitStatusAdded", { fg = colors.bright_green })
+hi("SnacksPickerGitStatusModified", { fg = colors.warning })
+hi("SnacksPickerGitStatusDeleted", { fg = colors.error })
+hi("SnacksPickerGitStatusStaged", { fg = colors.bright_green })
 
 -- Which-key
 hi("WhichKey", { fg = colors.sand })
