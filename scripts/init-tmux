@@ -11,12 +11,12 @@ fi
 SESSION_NAME="$1"
 WORKING_DIR="$(pwd)"
 
-if [ -n "$2" ]; then
-  STATUS_COLOR="$2"
-else
-  HASH=$(printf '%s' "$SESSION_NAME" | md5 -q | head -c 6)
-  STATUS_COLOR="#$HASH"
-fi
+# if [ -n "$2" ]; then
+#   STATUS_COLOR="$2"
+# else
+#   HASH=$(printf '%s' "$SESSION_NAME" | md5 -q | head -c 6)
+#   STATUS_COLOR="#$HASH"
+# fi
 
 # Check if session already exists
 if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
