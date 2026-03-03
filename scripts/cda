@@ -1,0 +1,99 @@
+#!/bin/bash
+
+# cda - cd all: sync all panes in the current tmux window to the current directory
+# Usage: cda [--no-restart]
+#
+# For each sibling pane, this script will:
+#   1. Gracefully stop any running process (nvim, claude, etc.)
+#   2. Send `cd <current_dir>` to the pane
+#   3. Restart the process (unless --no-restart is passed)
+
+set -euo pipefail
+
+if [ -z "$TMUX" ]; then
+  echo "Error: not inside a tmux session"
+  exit 1
+fi
+
+RESTART=true
+if [[ "${1:-}" == "--no-restart" ]]; then
+  RESTART=false
+fi
+
+TARGET_DIR="$(pwd)"
+CURRENT_PANE=$(tmux display-message -p '#P')
+
+# Check if a pane is running a specific process by inspecting its process tree
+pane_has_process() {
+  local pane_pid
+  pane_pid=$(tmux display-message -t "$1" -p '#{pane_pid}')
+  pgrep -P "$pane_pid" -f "$2" >/dev/null 2>&1
+}
+
+# Wait for a pane to return to a shell prompt (pane_current_command becomes zsh/bash)
+wait_for_shell() {
+  local pane="$1"
+  local attempts=0
+  while [ $attempts -lt 20 ]; do
+    local cmd
+    cmd=$(tmux display-message -t "$pane" -p '#{pane_current_command}')
+    if [[ "$cmd" == "zsh" || "$cmd" == "bash" ]]; then
+      return 0
+    fi
+    sleep 0.25
+    attempts=$((attempts + 1))
+  done
+  echo "Warning: pane $pane did not return to shell (still running: $cmd)"
+  return 1
+}
+
+for pane in $(tmux list-panes -F '#P'); do
+  [[ "$pane" == "$CURRENT_PANE" ]] && continue
+
+  cmd=$(tmux display-message -t "$pane" -p '#{pane_current_command}')
+
+  case "$cmd" in
+    nvim | vim)
+      echo "Pane $pane: stopping nvim..."
+      tmux send-keys -t "$pane" Escape ':qa!' Enter
+      wait_for_shell "$pane"
+      tmux send-keys -t "$pane" "cd '$TARGET_DIR'" Enter
+      if [[ "$RESTART" == true ]]; then
+        tmux send-keys -t "$pane" 'nvim .' Enter
+      fi
+      ;;
+
+    claude)
+      echo "Pane $pane: stopping claude..."
+      tmux send-keys -t "$pane" C-c
+      sleep 0.5
+      tmux send-keys -t "$pane" C-c
+      wait_for_shell "$pane"
+      tmux send-keys -t "$pane" "cd '$TARGET_DIR'" Enter
+      if [[ "$RESTART" == true ]]; then
+        tmux send-keys -t "$pane" 'claude' Enter
+      fi
+      ;;
+
+    node)
+      echo "Pane $pane: stopping node process..."
+      tmux send-keys -t "$pane" C-c
+      wait_for_shell "$pane"
+      tmux send-keys -t "$pane" "cd '$TARGET_DIR'" Enter
+      ;;
+
+    zsh | bash)
+      echo "Pane $pane: cd only"
+      tmux send-keys -t "$pane" "cd '$TARGET_DIR'" Enter
+      ;;
+
+    *)
+      echo "Pane $pane: interrupting ($cmd)..."
+      tmux send-keys -t "$pane" C-c
+      wait_for_shell "$pane"
+      tmux send-keys -t "$pane" "cd '$TARGET_DIR'" Enter
+      ;;
+  esac
+done
+
+echo "All panes synced to $TARGET_DIR"
