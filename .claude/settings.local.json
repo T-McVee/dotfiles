@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tmux show-options:*)",
+      "Bash(tmux set-option:*)"
+    ]
+  }
+}
