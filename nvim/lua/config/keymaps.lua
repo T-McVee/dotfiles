@@ -6,3 +6,6 @@ local map = vim.keymap.set
 
 -- VS Code-like save (Ctrl+S)
 map("n", "<C-s>", "<cmd>w<cr>", { desc = "Save File" })
+
+-- Git
+map("n", "<leader>ghq", "<cmd>bd<cr>", { desc = "Quit diff" })
