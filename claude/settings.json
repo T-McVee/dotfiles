@@ -1,11 +1,12 @@
 {
-  "skipDangerousModePermissionPrompt": true,
   "model": "opus",
-  "enabledPlugins": {
-    "beads@beads-marketplace": true
-  },
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
-  }
+  },
+  "enabledPlugins": {
+    "beads@beads-marketplace": true
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "voiceEnabled": true
 }
