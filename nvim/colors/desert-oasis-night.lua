@@ -9,7 +9,7 @@ vim.g.colors_name = "desert-oasis-night"
 -- Color palette
 local colors = {
   -- Base colors
-  bg = "#142735",
+  bg = "#0D1B26",
   fg = "#F5E8D8", -- Brighter from #E8D5B7
 
   -- UI colors
