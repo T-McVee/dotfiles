@@ -5,7 +5,8 @@
     "command": "~/.claude/statusline.sh"
   },
   "enabledPlugins": {
-    "beads@beads-marketplace": true
+    "beads@beads-marketplace": true,
+    "swift-lsp@claude-plugins-official": true
   },
   "skipDangerousModePermissionPrompt": true,
   "voiceEnabled": true
