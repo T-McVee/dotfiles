@@ -39,22 +39,16 @@ tmux set-option -t "$SESSION_NAME" status-bg "$STATUS_COLOR"
 tmux split-window -t "$SESSION_NAME:repo" -h -l 30% -c "$WORKING_DIR"
 
 # Split the right pane vertically into two stacked panes
-tmux split-window -t "$SESSION_NAME:repo.1" -v -l 20% -c "$WORKING_DIR"
+tmux split-window -t "$SESSION_NAME:repo.2" -v -l 20% -c "$WORKING_DIR"
 
 # Launch nvim in the primary left pane
-tmux send-keys -t "$SESSION_NAME:repo.0" 'nvim .' Enter
+tmux send-keys -t "$SESSION_NAME:repo.1" 'nvim .' Enter
 
 # Launch Claude Code in the top-right sidebar pane
-tmux send-keys -t "$SESSION_NAME:repo.1" 'claude' Enter
+tmux send-keys -t "$SESSION_NAME:repo.2" 'claude' Enter
 
 # Focus the primary left pane
-tmux select-pane -t "$SESSION_NAME:repo.0"
-
-# Create second window named 'dev-server'
-tmux new-window -t "$SESSION_NAME" -n "dev-server" -c "$WORKING_DIR"
-
-# Select the first window
-tmux select-window -t "$SESSION_NAME:repo"
+tmux select-pane -t "$SESSION_NAME:repo.1"
 
 # Attach or switch to the session
 if [ -n "$TMUX" ]; then
