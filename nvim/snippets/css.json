@@ -1,0 +1,8 @@
+{
+  "Border Red": {
+    "prefix": "br1",
+    "body": "border: 1px solid red;$1",
+    "description": "Debug border"
+  }
+}
+
