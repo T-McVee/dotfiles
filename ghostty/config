@@ -1,3 +1,7 @@
+macos-titlebar-style = transparent
+title = " "
+macos-titlebar-proxy-icon = hidden
+
 # Opacity settings
 background-opacity = 0.90
 background-blur = 85
