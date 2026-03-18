@@ -27,6 +27,7 @@ local colors = {
   coral = "#D99B8B", -- Brighter from #C17767
   copper = "#B5856B", -- Brighter from #9B6B4F
   teal = "#7BC3C3", -- Brighter from #5BA3A3
+  mauve = "#C4879B",
 
   -- Semantic colors
   error = "#E89B7D", -- Brighter from #D97757
