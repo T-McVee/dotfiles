@@ -2,6 +2,9 @@
 -- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 -- Add any additional options here
 
+-- Don't auto-change root dir when opening files in subdirectories with root markers
+vim.g.root_spec = { "cwd" }
+
 -- Auto-read files when changed outside of Neovim
 vim.opt.autoread = true
 
