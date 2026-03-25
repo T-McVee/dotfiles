@@ -1,4 +1,16 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(openspec archive:*)",
+      "Bash(openspec validate:*)",
+      "Bash(npx tsc:*)",
+      "Bash(openspec list:*)",
+      "Bash(openspec show:*)",
+      "Bash(wc:*)",
+      "Bash(cd:*)"
+    ],
+    "defaultMode": "acceptEdits"
+  },
   "model": "opus",
   "statusLine": {
     "type": "command",
@@ -6,8 +18,10 @@
   },
   "enabledPlugins": {
     "beads@beads-marketplace": true,
-    "swift-lsp@claude-plugins-official": true
+    "swift-lsp@claude-plugins-official": true,
+    "figma@claude-plugins-official": true
   },
-  "skipDangerousModePermissionPrompt": true,
-  "voiceEnabled": true
+  "effortLevel": "medium",
+  "voiceEnabled": true,
+  "skipDangerousModePermissionPrompt": true
 }
