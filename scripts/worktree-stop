@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Clean up a git worktree and its tmux window
+# Usage: ./worktree-stop [-f] [window-name]
+#
+# Run with no arguments from inside a [wt]- prefixed tmux window,
+# or pass a window name (e.g. [wt]-feature-my-thing) to stop it from anywhere.
+# Removes the worktree dir and kills the tmux window.
+# Pass -f to force removal of a worktree with uncommitted changes.
+
+FORCE=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -f) FORCE="--force"; shift ;;
+    *)  TARGET_WINDOW="$1"; shift ;;
+  esac
+done
+
+# Must be inside a tmux session
+if [ -z "$TMUX" ]; then
+  echo "Error: must be run inside a tmux session"
+  exit 1
+fi
+
+SESSION_NAME="$(tmux display-message -p '#S')"
+
+# Determine the window name
+if [ -n "$TARGET_WINDOW" ]; then
+  WINDOW_NAME="$TARGET_WINDOW"
+
+  # Verify the window exists
+  if ! tmux list-windows -t "$SESSION_NAME" -F '#W' | grep -Fqx "$WINDOW_NAME"; then
+    echo "Error: tmux window '$WINDOW_NAME' not found in session '$SESSION_NAME'"
+    exit 1
+  fi
+else
+  WINDOW_NAME="$(tmux display-message -p '#W')"
+fi
+
+# Must be a worktree window
+if [[ "$WINDOW_NAME" != \[wt\]-* ]]; then
+  echo "Error: window '$WINDOW_NAME' is not a worktree window (missing [wt]- prefix)"
+  exit 1
+fi
+
+# Get the worktree dir from the target window's first pane
+WORKTREE_DIR="$(tmux list-panes -t "$SESSION_NAME:$WINDOW_NAME" -F '#{pane_current_path}' | head -1)"
+if [ -z "$WORKTREE_DIR" ] || ! git -C "$WORKTREE_DIR" rev-parse --git-dir > /dev/null 2>&1; then
+  echo "Error: could not find a git repository in window '$WINDOW_NAME'"
+  exit 1
+fi
+
+# Find the main repo root via worktree list
+REPO_ROOT="$(git -C "$WORKTREE_DIR" worktree list --porcelain | head -1 | sed 's/^worktree //')"
+
+# Remove the git worktree
+if ! git -C "$REPO_ROOT" worktree remove $FORCE "$WORKTREE_DIR" 2>&1; then
+  echo "Hint: use 'worktree-stop -f' to force removal with uncommitted changes"
+  exit 1
+fi
+
+# Kill the tmux window
+tmux kill-window -t "$SESSION_NAME:$WINDOW_NAME"

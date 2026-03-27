@@ -1,6 +1,6 @@
 # OPENSPEC:START
 # OpenSpec shell completions configuration
-fpath=("/Users/tim/.zsh/completions" $fpath)
+fpath=("$HOME/dotfiles/zsh/completions" "/Users/tim/.zsh/completions" $fpath)
 autoload -Uz compinit
 compinit
 # OPENSPEC:END
