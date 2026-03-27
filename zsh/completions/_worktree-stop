@@ -1,0 +1,13 @@
+#compdef worktree-stop
+
+_worktree-stop() {
+  local -a windows
+  if [ -n "$TMUX" ]; then
+    windows=(${(f)"$(tmux list-windows -F '#W' | grep '^\[wt\]-')"})
+  fi
+  _arguments \
+    '-f[force removal of worktree with uncommitted changes]' \
+    '1:worktree window:compadd -a windows'
+}
+
+_worktree-stop "$@"
