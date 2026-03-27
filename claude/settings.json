@@ -20,7 +20,8 @@
     "beads@beads-marketplace": true,
     "swift-lsp@claude-plugins-official": true,
     "figma@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true
+    "skill-creator@claude-plugins-official": true,
+    "imessage@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
