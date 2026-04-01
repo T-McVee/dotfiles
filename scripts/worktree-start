@@ -1,21 +1,30 @@
 #!/bin/bash
 
 # Create a git worktree and open it in a new tmux window with the standard dev layout
-# Usage: ./worktree-start <branch-name>
+# Usage: ./worktree-start <branch-name> [--from-main]
 #
 # - Creates a worktree as a sibling dir to the repo root
 # - Branch names with / are converted to - for the dir name
 # - Adds a new tmux window to the current session
+# - With --from-main, the new branch is cut from main (default: current HEAD)
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/lib/tmux-layout.sh"
 
-if [ -z "$1" ]; then
-  echo "Usage: $0 <branch-name>"
+FROM_MAIN=false
+BRANCH_NAME=""
+
+for arg in "$@"; do
+  case "$arg" in
+    --from-main) FROM_MAIN=true ;;
+    *) BRANCH_NAME="$arg" ;;
+  esac
+done
+
+if [ -z "$BRANCH_NAME" ]; then
+  echo "Usage: $0 <branch-name> [--from-main]"
   exit 1
 fi
-
-BRANCH_NAME="$1"
 DIR_NAME="wt-${BRANCH_NAME//\//-}"
 WINDOW_NAME="[wt]-${BRANCH_NAME//\//-}"
 
@@ -54,7 +63,11 @@ if tmux list-windows -t "$SESSION_NAME" -F '#W' | grep -qx "$WINDOW_NAME"; then
 fi
 
 # Create the worktree with a new branch
-git worktree add -b "$BRANCH_NAME" "$WORKTREE_DIR"
+if [ "$FROM_MAIN" = true ]; then
+  git worktree add -b "$BRANCH_NAME" "$WORKTREE_DIR" main
+else
+  git worktree add -b "$BRANCH_NAME" "$WORKTREE_DIR"
+fi
 
 # Create a new tmux window in the current session
 tmux new-window -t "$SESSION_NAME" -n "$WINDOW_NAME" -c "$WORKTREE_DIR"
