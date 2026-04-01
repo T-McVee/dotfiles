@@ -1,0 +1,10 @@
+#!/bin/zsh
+# Ensure headroom proxy is running in the background.
+# Source this file or run it directly.
+
+if ! lsof -iTCP:8787 -sTCP:LISTEN &>/dev/null; then
+  headroom proxy &>/dev/null &
+  disown
+fi
+
+alias hcc='headroom wrap claude --no-proxy'

@@ -44,3 +44,14 @@ function y() {
 export PATH="$PATH:/Applications/Ghostty.app/Contents/MacOS"
 
 export PATH="$PATH:$HOME/dotfiles/scripts"
+
+# bun completions
+[ -s "/Users/tim/.bun/_bun" ] && source "/Users/tim/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Headroom proxy + claude alias
+source "$HOME/dotfiles/scripts/headroom-ensure-proxy"
+
