@@ -42,3 +42,6 @@ function y() {
 }
 
 export PATH="$PATH:$HOME/dotfiles/scripts"
+
+# Headroom proxy + claude alias
+source "$HOME/dotfiles/scripts/headroom-ensure-proxy"
