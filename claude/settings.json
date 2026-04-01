@@ -11,29 +11,6 @@
     ],
     "defaultMode": "acceptEdits"
   },
-  "model": "opus",
-  "statusLine": {
-    "type": "command",
-    "command": "node \"/Users/tim/.claude/hooks/gsd-statusline.js\""
-  },
-  "enabledPlugins": {
-    "beads@beads-marketplace": true,
-    "swift-lsp@claude-plugins-official": true,
-    "figma@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true,
-    "imessage@claude-plugins-official": true
-  },
-  "extraKnownMarketplaces": {
-    "anthropic-agent-skills": {
-      "source": {
-        "source": "github",
-        "repo": "anthropics/skills"
-      }
-    }
-  },
-  "effortLevel": "medium",
-  "voiceEnabled": true,
-  "skipDangerousModePermissionPrompt": true,
   "hooks": {
     "SessionStart": [
       {
@@ -69,5 +46,27 @@
         ]
       }
     ]
-  }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash \"/Users/tim/.claude/statusline.sh\""
+  },
+  "enabledPlugins": {
+    "beads@beads-marketplace": true,
+    "swift-lsp@claude-plugins-official": true,
+    "figma@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "imessage@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "anthropic-agent-skills": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/skills"
+      }
+    }
+  },
+  "effortLevel": "medium",
+  "voiceEnabled": true,
+  "skipDangerousModePermissionPrompt": true
 }
