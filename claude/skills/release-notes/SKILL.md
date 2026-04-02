@@ -65,15 +65,13 @@ date +%Y%m%d-%H%M%S
 Create `release-notes-{timestamp}.md` in the working directory with this structure:
 
 ```markdown
-# Release Notes — {branch-name}
-
 - First thing that was done
 - Second thing that was done
 - Another change
 - ...
 ```
 
-Keep bullets brief — one line each when possible. No categories, no headers beyond the title. If a bullet needs a small clarification, a short parenthetical is fine.
+Keep bullets brief — one line each when possible. No categories, no headers. If a bullet needs a small clarification, a short parenthetical is fine.
 
 ### 5. Present to the user
 
