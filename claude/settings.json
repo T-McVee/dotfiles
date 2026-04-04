@@ -7,6 +7,7 @@
       "Bash(openspec list:*)",
       "Bash(openspec show:*)",
       "Bash(wc:*)",
+      "Bash(grep:*)",
       "Bash(cd:*)"
     ],
     "defaultMode": "acceptEdits"
