@@ -7,4 +7,4 @@ if ! lsof -iTCP:8787 -sTCP:LISTEN &>/dev/null; then
   disown
 fi
 
-alias hcc='headroom wrap claude --no-proxy'
+alias hcc='headroom wrap claude --no-proxy --enable-auto-mode'

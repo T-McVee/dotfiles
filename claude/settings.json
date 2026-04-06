@@ -1,15 +1,18 @@
 {
   "permissions": {
     "allow": [
+      "Bash(bd:*)",
+      "Bash(bd create:*)",
+      "Bash(bd dolt:*)",
+      "Bash(bd ready:*)",
+      "Bash(cd:*)",
+      "Bash(grep:*)",
+      "Bash(npx tsc:*)",
       "Bash(openspec archive:*)",
       "Bash(openspec validate:*)",
-      "Bash(npx tsc:*)",
       "Bash(openspec list:*)",
       "Bash(openspec show:*)",
-      "Bash(wc:*)",
-      "Bash(grep:*)",
-      "Bash(bd:*)",
-      "Bash(cd:*)"
+      "Bash(wc:*)"
     ],
     "defaultMode": "acceptEdits"
   },

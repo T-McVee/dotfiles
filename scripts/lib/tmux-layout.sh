@@ -19,7 +19,7 @@ setup_dev_layout() {
   tmux send-keys -t "$target.1" 'nvim .' Enter
 
   # Launch Claude Code in the top-right sidebar pane
-  tmux send-keys -t "$target.2" 'claude' Enter
+  tmux send-keys -t "$target.2" 'hcc' Enter
 
   # Focus the primary left pane
   tmux select-pane -t "$target.1"
