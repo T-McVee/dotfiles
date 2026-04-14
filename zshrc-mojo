@@ -34,6 +34,7 @@ eval "$(starship init zsh)"
 export EDITOR="nvim"
 
 function y() {
+	"$HOME/dotfiles/yazi/build-keymap.sh" 2>/dev/null || true
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
 	yazi "$@" --cwd-file="$tmp"
 	IFS= read -r -d '' cwd < "$tmp"
