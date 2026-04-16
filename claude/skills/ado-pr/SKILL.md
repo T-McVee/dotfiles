@@ -10,7 +10,7 @@ Creates a pull request in Azure DevOps by running QA checks, generating release 
 ## Flow overview
 
 1. Verify we're on a suitable branch
-2. Run QA checks (if `pr-checks.md` exists)
+2. Run QA checks (if `pr-check.md` exists)
 3. Generate the PR body from release notes
 4. Derive a conventional commit PR title from commit history (no scope in title)
 5. Extract work item IDs from commits
@@ -32,9 +32,9 @@ If you're on `main`, stop — PRs should come from a feature branch. If there ar
 
 ## Step 2: Run QA checks
 
-Look for `pr-checks.md` in the project root, then `.claude/pr-checks.md`.
+Look for `pr-check.md` in the project root, then `.claude/pr-check.md`.
 
-### If pr-checks.md doesn't exist: create it
+### If pr-check.md doesn't exist: create it
 
 Don't skip — offer to create one. First, sniff the project to infer likely commands:
 
@@ -46,16 +46,16 @@ Don't skip — offer to create one. First, sniff the project to infer likely com
 
 Then ask the user one concise message — something like:
 
-> "No `pr-checks.md` found. Based on your project I'd suggest:
+> "No `pr-check.md` found. Based on your project I'd suggest:
 >
 > - `npm run lint`
 > - `npm test`
 >
 > Should I also add subagent checks for security and conventions? And is there anywhere else to save this — project root or `.claude/`?"
 
-Use their answer to write `pr-checks.md` to the chosen location. Then proceed with the checks as normal. The file will be there for every future PR on this project.
+Use their answer to write `pr-check.md` to the chosen location. Then proceed with the checks as normal. The file will be there for every future PR on this project.
 
-If the user says they don't want a `pr-checks.md` at all, skip QA checks and continue.
+If the user says they don't want a `pr-check.md` at all, skip QA checks and continue.
 
 ### Running the checks
 
@@ -128,7 +128,7 @@ The QA results section (built in step 2) will be appended after the release note
 - For subagent checks, format the name as `{Role} agent review`
 - Use ✅ for pass, ⚠️ for pass-with-warnings, ❌ for fail
 - Keep the Result column brief — one line. No log dumps in the table.
-- Omit this section entirely if no `pr-checks.md` was found and none was created
+- Omit this section entirely if no `pr-check.md` was found and none was created
 
 ---
 
@@ -168,7 +168,7 @@ Strip the `#` prefix — the CLI expects bare numeric IDs.
 
 Show the user:
 
-1. **QA Results** — pass/fail summary (skip this section if no `pr-checks.md` was found). Call out clearly if anything failed.
+1. **QA Results** — pass/fail summary (skip this section if no `pr-check.md` was found). Call out clearly if anything failed.
 2. **Proposed PR**:
    - **Title**: the conventional commit title
    - **Body**: the release notes
@@ -212,5 +212,5 @@ After creation, show the PR URL from the output.
 
 - **Draft by default** — the PR is created as a draft. The user can mark it ready for review in ADO once they're satisfied.
 - **ADO CLI prerequisite** — requires the Azure CLI with the `azure-devops` extension (`az extension add --name azure-devops`) and an active login (`az login`). If the command fails for auth or config reasons, surface the error clearly.
-- **Missing tools** — if `pr-checks.md` references a tool that isn't installed (e.g., `eslint` not found), note it in the QA summary rather than failing the whole step.
-- **See `references/pr-checks-example.md`** for guidance on writing a `pr-checks.md` file for your project.
+- **Missing tools** — if `pr-check.md` references a tool that isn't installed (e.g., `eslint` not found), note it in the QA summary rather than failing the whole step.
+- **See `references/pr-checks-example.md`** for guidance on writing a `pr-check.md` file for your project.

@@ -1,6 +1,6 @@
-# pr-checks.md — Format Guide
+# pr-check.md — Format Guide
 
-Place this file in your project root (or `.claude/pr-checks.md`) to define QA checks that run before a PR is created.
+Place this file in your project root (or `.claude/pr-check.md`) to define QA checks that run before a PR is created.
 
 The format is freeform — describe what you want checked in plain language. Command checks are run directly; subagent checks are run by a Claude subagent that reads the diff and relevant files.
 
