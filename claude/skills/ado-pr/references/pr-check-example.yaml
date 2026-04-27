@@ -1,0 +1,51 @@
+# pr-check.yaml — Format Guide
+#
+# Place this file in your project root (or `.claude/pr-check.yaml`) to define
+# QA checks that run before a PR is created.
+#
+# `commands` run in the shell exactly as written.
+# `reviews` are run by a Claude subagent that reads the diff and relevant files.
+
+# ---
+# Example: Node.js project
+# ---
+
+# commands:
+#   - name: lint
+#     run: npm run lint
+#   - name: tests
+#     run: npm test
+#   - name: build
+#     run: npm run build
+#
+# reviews:
+#   - name: security
+#     prompt: Review changed files for common vulnerabilities — SQL injection, XSS, hardcoded secrets, unsafe eval/exec, unvalidated user input reaching sensitive operations.
+#   - name: conventions
+#     prompt: Verify new code follows existing patterns — naming conventions, error handling style, API response shapes, logging patterns.
+
+# ---
+# Example: .NET project
+# ---
+
+# commands:
+#   - name: build
+#     run: dotnet build --no-incremental
+#   - name: tests
+#     run: dotnet test --logger trx
+#
+# reviews:
+#   - name: security
+#     prompt: Check for insecure deserialization, missing authorization attributes on controllers, sensitive data in logs or exceptions.
+#   - name: conventions
+#     prompt: Ensure new endpoints follow the existing controller/service/repository pattern. Check that new DTOs match naming conventions.
+
+# ---
+# Tips
+# ---
+#
+# - Commands run from the project root. If a command needs a specific working
+#   directory, use `cd packages/api && npm test` as the run value.
+# - Review prompts should be specific — the more concrete the description,
+#   the more useful the subagent output.
+# - Checks can be added or removed freely. The skill re-reads the file each time.
