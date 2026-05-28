@@ -46,3 +46,11 @@ export PATH="$PATH:$HOME/dotfiles/scripts"
 
 # Headroom proxy + claude alias
 source "$HOME/dotfiles/scripts/headroom-ensure-proxy"
+
+# pnpm
+export PNPM_HOME="/Users/tim/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
