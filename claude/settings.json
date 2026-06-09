@@ -20,51 +20,7 @@
     "defaultMode": "auto"
   },
   "model": "opus",
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"/Users/tim/.claude/hooks/gsd-check-update.js\""
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Bash|Edit|Write|MultiEdit|Agent|Task",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"/Users/tim/.claude/hooks/gsd-context-monitor.js\"",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"/Users/tim/.claude/hooks/gsd-prompt-guard.js\"",
-            "timeout": 5
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/tim/.claude/hooks/rtk-rewrite.sh"
-          }
-        ]
-      }
-    ]
-  },
+  "hooks": {},
   "statusLine": {
     "type": "command",
     "command": "bash \"/Users/tim/.claude/statusline.sh\""
