@@ -1,0 +1,51 @@
+# Reference: SonarQube Cloud steps for .NET (C#) Azure DevOps pipelines
+# Used by the sonar-integrate skill. Only main-branch pipelines get these steps.
+#
+# Variables to add at the top of the pipeline (if not already present):
+variables:
+  sonarQubeEndpoint: 'SonarQubeConnection'
+
+# Checkout — must have fetchDepth: 0 for SonarQube git blame
+steps:
+  - checkout: self
+    fetchDepth: 0
+
+  # ... existing UseDotNet, Restore steps ...
+
+  # INSERT AFTER 'Restore' AND BEFORE 'Build'
+  - task: SonarCloudPrepare@4
+    displayName: 'Prepare SonarQube Cloud analysis'
+    inputs:
+      SonarCloud: '$(sonarQubeEndpoint)'
+      organization: 'mojo-soup'
+      scannerMode: 'dotnet'
+      projectKey: 'Mojo-Soup_<repo-name>'
+      projectName: '<Human Readable Name>'
+      extraProperties: |
+        sonar.exclusions=**/*.Tests/**,**/bin/**,**/obj/**
+        sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/TestResults/coverage.opencover.xml
+
+  # ... existing Build step ...
+
+  # Test step must produce OpenCover coverage for SonarQube to pick it up.
+  # Requires coverlet.collector or coverlet.msbuild in the test project.
+  - task: DotNetCoreCLI@2
+    displayName: 'Test with coverage'
+    inputs:
+      command: 'test'
+      projects: '$(workingDirectory)/**/*Tests.csproj'
+      arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/coverage.opencover.xml'
+
+  # INSERT AFTER 'Test'
+  - task: SonarCloudAnalyze@4
+    displayName: 'Run SonarQube Cloud analysis'
+    condition: succeeded()
+
+  # ... existing Publish/Artifacts steps ...
+
+  # INSERT AT THE END (after any other publish steps)
+  - task: SonarCloudPublish@4
+    displayName: 'Publish SonarQube Cloud Quality Gate'
+    condition: succeeded()
+    inputs:
+      pollingTimeoutSec: '300'

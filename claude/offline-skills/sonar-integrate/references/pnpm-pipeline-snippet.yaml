@@ -1,0 +1,43 @@
+# Reference: SonarQube Cloud steps for pnpm Azure DevOps pipelines
+# Used by the sonar-integrate skill. Only main-branch pipelines get these steps.
+# Project-specific config lives in sonar-project.properties (see Reference D).
+
+variables:
+  sonarQubeEndpoint: 'SonarQubeConnection'
+
+steps:
+  - checkout: self
+    fetchDepth: 0  # required for SonarQube blame
+
+  # ... existing NodeTool / pnpm setup steps ...
+
+  - script: pnpm install --frozen-lockfile
+    displayName: 'Install dependencies'
+
+  # INSERT AFTER pnpm install AND BEFORE build / test
+  - task: SonarCloudPrepare@4
+    displayName: 'Prepare SonarQube Cloud analysis'
+    inputs:
+      SonarCloud: '$(sonarQubeEndpoint)'
+      organization: 'mojo-soup'
+      scannerMode: 'cli'
+      configMode: 'file'  # reads sonar-project.properties
+
+  # ... existing build step ...
+
+  # Test step must produce coverage/lcov.info. Adjust to match the project's
+  # existing test command if different (e.g. pnpm test:coverage).
+  - script: pnpm test -- --coverage --coverage.reporter=lcov
+    displayName: 'Test with coverage'
+
+  # INSERT AFTER tests
+  - task: SonarCloudAnalyze@4
+    displayName: 'Run SonarQube Cloud analysis'
+    condition: succeeded()
+
+  # INSERT AT END
+  - task: SonarCloudPublish@4
+    displayName: 'Publish SonarQube Cloud Quality Gate'
+    condition: succeeded()
+    inputs:
+      pollingTimeoutSec: '300'

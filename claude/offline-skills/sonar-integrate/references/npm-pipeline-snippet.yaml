@@ -1,0 +1,43 @@
+# Reference: SonarQube Cloud steps for npm Azure DevOps pipelines
+# Used by the sonar-integrate skill. Only main-branch pipelines get these steps.
+# Project-specific config lives in sonar-project.properties (see Reference D).
+
+variables:
+  sonarQubeEndpoint: 'SonarQubeConnection'
+
+steps:
+  - checkout: self
+    fetchDepth: 0  # required for SonarQube blame
+
+  # ... existing NodeTool / npm authenticate steps ...
+
+  - script: npm ci
+    displayName: 'Install dependencies'
+
+  # INSERT AFTER 'npm ci' AND BEFORE 'build' / 'test'
+  - task: SonarCloudPrepare@4
+    displayName: 'Prepare SonarQube Cloud analysis'
+    inputs:
+      SonarCloud: '$(sonarQubeEndpoint)'
+      organization: 'mojo-soup'
+      scannerMode: 'cli'
+      configMode: 'file'  # reads sonar-project.properties
+
+  # ... existing build step ...
+
+  # Test step must produce coverage/lcov.info for SonarQube to pick it up.
+  # Adjust the script to match the project's existing test command if different.
+  - script: npm run test -- --coverage --coverageReporters=lcov
+    displayName: 'Test with coverage'
+
+  # INSERT AFTER tests
+  - task: SonarCloudAnalyze@4
+    displayName: 'Run SonarQube Cloud analysis'
+    condition: succeeded()
+
+  # INSERT AT END
+  - task: SonarCloudPublish@4
+    displayName: 'Publish SonarQube Cloud Quality Gate'
+    condition: succeeded()
+    inputs:
+      pollingTimeoutSec: '300'
