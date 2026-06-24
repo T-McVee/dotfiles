@@ -54,3 +54,11 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+
+# dotnet
+# Add .NET Core SDK tools
+export PATH="$PATH:/Users/tim/.dotnet/tools"
+
+
+# Added by sonarqube-cli installer
+export PATH="$HOME/.local/share/sonarqube-cli/bin:$PATH"
