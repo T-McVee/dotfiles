@@ -48,6 +48,7 @@
       }
     ]
   },
+  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "bash \"/Users/tim/.claude/statusline.sh\""
