@@ -1,0 +1,5 @@
+# herdr config
+# Managed via dotfiles: ~/.config/herdr/config.toml is a symlink to this file.
+# Reload after editing with: herdr server reload-config
+#
+# Add configuration below. (herdr 0.7.1)
