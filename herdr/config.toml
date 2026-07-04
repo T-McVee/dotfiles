@@ -3,3 +3,17 @@
 # Reload after editing with: herdr server reload-config
 #
 # Add configuration below. (herdr 0.7.1)
+
+[keys]
+# Match tmux prefix (backtick). Default is "ctrl+b".
+prefix = "backtick"
+
+# prefix+r is resize_mode by default; move it so prefix+r can reload config.
+resize_mode = "prefix+shift+r"
+
+# Reload this config with prefix+r (no built-in action exists, so run the CLI).
+[[keys.command]]
+key = "prefix+r"
+type = "shell"
+command = "$HERDR_BIN_PATH server reload-config"
+description = "reload herdr config"
