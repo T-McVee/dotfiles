@@ -11,9 +11,14 @@ prefix = "backtick"
 # prefix+r is resize_mode by default; move it so prefix+r can reload config.
 resize_mode = "prefix+shift+r"
 
-# Reload this config with prefix+r (no built-in action exists, so run the CLI).
-[[keys.command]]
-key = "prefix+r"
-type = "shell"
-command = "$HERDR_BIN_PATH server reload-config"
-description = "reload herdr config"
+# Native reload-config action (unset by default). Bind it to prefix+r.
+reload_config = "prefix+r"
+
+# Splits: vertical = new pane to the right, horizontal = new pane below.
+split_vertical = "prefix+backslash"
+split_horizontal = "prefix+minus"
+close_pane = "prefix+_"
+
+[theme]
+name = "tokyo-night"
+auto_switch = false
