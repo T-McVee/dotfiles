@@ -9,7 +9,7 @@
 prefix = "backtick"
 
 # prefix+r is resize_mode by default; move it so prefix+r can reload config.
-resize_mode = "prefix+shift+r"
+resize_mode = "prefix+]"
 
 # Native reload-config action (unset by default). Bind it to prefix+r.
 reload_config = "prefix+r"
@@ -22,3 +22,8 @@ close_pane = "prefix+_"
 [theme]
 name = "tokyo-night"
 auto_switch = false
+
+[ui]
+pane_borders = true
+pane_gaps = true
+show_agent_labels_on_pane_borders = false
