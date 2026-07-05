@@ -20,7 +20,7 @@ split_horizontal = "prefix+minus"
 close_pane = "prefix+_"
 
 [theme]
-name = "tokyo-night"
+name = "catppuccin"
 auto_switch = false
 
 [ui]
