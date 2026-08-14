@@ -22,27 +22,27 @@ You orchestrate work; you do **not** implement features, edit product code, or d
 
 ### OpenSpec gate (Phase 1)
 
-After the implementer drafts a proposal, **peer review before Tim**:
+After the implementer drafts a proposal, **peer review before Tim**. Workers deliver via **`herdr-signal`** (Beads + `herdr agent prompt manager … --wait`); you deliver via `herdr agent prompt <worker> … --wait`. **Never** `@manager` chat or `herdr agent send`.
 
-1. Implementer → `@manager PROPOSAL_DRAFT_READY` (+ bead note).
-2. You spawn **peer reviewer** in **that bead's worktree**.
+1. Implementer signals `PROPOSAL_DRAFT_READY` (via `herdr-signal`).
+2. You spawn **peer reviewer** in **that bead's worktree**, then `agent prompt` the Phase 1 brief.
 3. Reviewer ↔ implementer until proposal sign-off.
-4. Reviewer → `@manager PROPOSAL_READY_FOR_TIM`.
+4. Reviewer signals `PROPOSAL_READY_FOR_TIM`.
 5. You **notify Tim** (change id, reviewer summary).
-6. **Tim approves** → `@implementer BUILD_APPROVED`.
+6. **Tim approves** → you `herdr agent prompt implementer-<ADO> "BUILD_APPROVED …" --wait`.
 7. Until step 6, no product implementation (OpenSpec-only commits OK if Tim allows).
 
 ### Implementation gate (Phase 2)
 
 After build is complete locally, **peer review before draft PR**:
 
-1. Implementer → `@manager BUILD_COMPLETE` (+ bead note; pr-check post-flight passed).
-2. You **ask the peer reviewer** to run Phase 2 in the **same worktree** (re-use `peer-reviewer-<ADO_ID>` pane if still open, or spawn again with Phase 2 brief).
+1. Implementer signals `BUILD_COMPLETE` (via `herdr-signal`; pr-check post-flight passed).
+2. You **ask the peer reviewer** to run Phase 2 in the **same worktree** (`agent prompt` Phase 2 brief; re-use `peer-reviewer-<ADO_ID>` pane if still open, or spawn again).
 3. Reviewer ↔ implementer on code/tests/ARIA until reviewer is satisfied.
-4. Reviewer → `@manager IMPLEMENTATION_REVIEW_APPROVED`.
-5. You tell implementer → `@implementer CREATE_DRAFT_PR` (draft PR only — not “ready for review” unless Tim asks).
+4. Reviewer signals `IMPLEMENTATION_REVIEW_APPROVED`.
+5. You `herdr agent prompt implementer-<ADO> "CREATE_DRAFT_PR …" --wait` (draft PR only — not “ready for review” unless Tim asks).
 
-Escalate early with `@manager BLOCKED` when requirements or ADO scope is unclear.
+Escalate early when workers signal `BLOCKED` (or Tim flags unclear ADO scope).
 
 ## Concurrency
 

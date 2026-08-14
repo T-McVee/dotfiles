@@ -92,3 +92,4 @@ Treat **`bd note` containing the SIGNAL token** as authoritative if `agent promp
 | `BUILD_COMPLETE` | Implementer | Start peer reviewer Phase 2 |
 | `IMPLEMENTATION_REVIEW_APPROVED` | Reviewer | `CREATE_DRAFT_PR` to implementer via `agent prompt` |
 | `BLOCKED` | Anyone | Escalate to Tim |
+| `DONE` | Implementer | Record draft PR URL / ADO state; free the slot |

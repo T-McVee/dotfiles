@@ -12,6 +12,21 @@ description: >
 
 You are the **peer reviewer** for one ADO story in **this** worktree. The manager assigns **Phase 1** (OpenSpec) or **Phase 2** (implementation) in your brief. You do **not** merge PRs or replace Tim’s final PR review unless Tim says otherwise.
 
+## How to communicate (Herdr ≥ 0.8)
+
+**Cursor `@manager` chat mentions do not cross panes.** Cross-pane handoffs use Herdr native delivery:
+
+| Direction | Method |
+|-----------|--------|
+| **You → manager** | Load **`herdr-signal`**: `bd note` + `bd dolt push`, then `herdr agent prompt manager "$MSG" --wait --timeout 60000` |
+| **Manager → you** | Manager delivers phase briefs via `herdr agent prompt peer-reviewer-<ADO> … --wait` |
+| **You ↔ implementer** | Same worktree — give feedback in shared chat / files; no Herdr prompt required |
+| **You ↔ Tim** | Only if Tim is in this pane; otherwise escalate via manager (`BLOCKED` or phase sign-off) |
+
+**Never** use `herdr agent send` for briefs or signals.
+
+One outbound `agent prompt` per handoff. If prompt stalls/times out, **do not retry in a loop** — the bead note is authoritative.
+
 ## Roles
 
 - **Implementer:** owns artifacts and code; applies your feedback.
@@ -28,7 +43,7 @@ You review **OpenSpec artifacts only**. You do **not** approve build — Tim doe
 ### Hard rules (Phase 1)
 
 1. **Scope:** `openspec/changes/<change-id>/` only. No product code in `src/` / `e2e/`.
-2. **Feedback to implementer** in this workspace. Escalate `@manager BLOCKED` only for ambiguous requirements.
+2. **Feedback to implementer** in this workspace. Escalate with **`herdr-signal`** `BLOCKED` only for ambiguous requirements (not `@manager` chat).
 3. **Sign-off:** “ready for Tim’s review”, not “start building”.
 
 ### What to review (Phase 1)
@@ -43,19 +58,21 @@ Structured feedback (Must fix / Should fix / Nice to have / Questions) until no 
 
 ### Phase 1 hand off
 
-Use **`herdr-signal`** with `PROPOSAL_READY_FOR_TIM` (Beads + `herdr agent prompt manager … --wait`). Do **not** rely on `@manager` chat.
+Use **`herdr-signal`** — Beads first, then native prompt:
 
-Include in the signal body:
-
-```text
-Bead: <BEAD_ID>
-ADO: <ADO_ID>
-OpenSpec change: <change-id>
+```bash
+SIGNAL=PROPOSAL_READY_FOR_TIM
+BEAD=<BEAD_ID>
+ADO=<ADO_ID>
+BODY="OpenSpec change: <change-id>
 Reviewer sign-off: <paragraph>
-Deferred / Tim decisions: <bullets or "none">
+Deferred / Tim decisions: <bullets or none>"
+# Full helper in herdr-signal:
+# bd note + bd dolt push
+# herdr agent prompt manager "$MSG" --wait --timeout 60000
 ```
 
-Ask implementer to `bd note` OpenSpec ready for Tim. **Stop** until manager re-assigns Phase 2 later.
+Ask implementer to `bd note` OpenSpec ready for Tim. **Stop** until manager re-assigns Phase 2 later (via `agent prompt` to this pane).
 
 ---
 
@@ -68,7 +85,7 @@ You review **the built work** in this worktree: diff vs approved OpenSpec, tests
 1. **Scope:** changes that implement the approved OpenSpec change + ADO AC; flag scope creep.
 2. **Run/read** project gates when useful (`pr-check.yaml` — you may ask implementer to run and paste failures).
 3. **Feedback to implementer** directly; iterate until you would approve a draft PR.
-4. **Do not** tell implementer to open the PR — manager sends `CREATE_DRAFT_PR` after your sign-off.
+4. **Do not** tell implementer to open the PR — manager prompts `CREATE_DRAFT_PR` after your sign-off.
 5. **E2e:** if new/changed e2e, note whether Tim pre-approved per project rules.
 
 ### What to review (Phase 2)
@@ -84,12 +101,23 @@ Same feedback structure as Phase 1. Re-review after implementer pushes fixes (lo
 
 ### Phase 2 hand off
 
-When satisfied, use **`herdr-signal`** with `IMPLEMENTATION_REVIEW_APPROVED` (see `herdr-signal` skill — not `@manager` chat).
+When satisfied, use **`herdr-signal`**:
+
+```bash
+SIGNAL=IMPLEMENTATION_REVIEW_APPROVED
+BEAD=<BEAD_ID>
+ADO=<ADO_ID>
+BODY="Ready for CREATE_DRAFT_PR; summary: <bullets>"
+# herdr-signal helper → herdr agent prompt manager … --wait
+```
+
+Do **not** use `@manager` chat or `herdr agent send`.
 
 ---
 
 ## Do not
 
 - Start build (Phase 1) or open/mark PR ready (Phase 2) without manager instruction
+- Rely on `@manager` chat or `herdr agent send` for cross-pane signals
 - `bd ado push`, claim beads, or work in other worktrees
 - Merge or force-push
