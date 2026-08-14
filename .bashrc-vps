@@ -131,6 +131,7 @@ export PATH="$HOME/.local/bin:$PATH"
 # ---------------------------------------------------------------------------
 
 export EDITOR="nvim"
+alias pn=pnpm
 
 # Yazi: launch with `y`, and cd into yazi's last directory on quit.
 # yazi runs as a child process and can't change this shell's cwd, so it writes
