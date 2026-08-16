@@ -3,8 +3,8 @@ name: ado-crew-signal
 description: >
   Cross-pane mail for ado-crew. Delivers a tokenized memo via Herdr 0.8
   `herdr agent prompt --wait` and writes `.ticket/HANDOFF.md`. Use whenever an
-  ado-crew worker, reviewer, or team-lead must signal another persona. Do not
-  use @mentions or `herdr agent send`.
+  ado-crew worker, reviewer, demonstrator, or team-lead must signal another
+  persona. Do not use @mentions or `herdr agent send`.
 ---
 
 # ado-crew signal
@@ -41,10 +41,10 @@ Do **not** use `herdr agent send`. Do **not** overwrite `herdr-signal` (that ski
 
 | Sender | Target |
 |--------|--------|
-| worker, reviewer | `team-lead-<ADO>` |
+| worker, reviewer, demonstrator | `team-lead-<ADO>` |
 | team-lead → manager | `manager` |
 | manager → team-lead | `team-lead-<ADO>` |
-| team-lead → worker / reviewer | `worker-<ADO>-<n>` / `reviewer-<ADO>-<n>` |
+| team-lead → worker / reviewer / demonstrator | `worker-<ADO>-<n>` / `reviewer-<ADO>-<n>` / `demonstrator-<ADO>-<n>` |
 
 Names: `[a-z][a-z0-9_-]{0,31}`, unique among live agents.
 
@@ -87,8 +87,10 @@ Optional Beads log (not the ready-graph): if `BEAD` is set and `bd` works, the s
 | `BRANCH_REVIEW` | team-lead → reviewer | Review the branch |
 | `BRANCH_REVIEW_MEMO` | reviewer → team-lead | Observations; not a merge |
 | `CREATE_DRAFT_PR` | team-lead → worker | Open draft PR (`ado-pr`) |
+| `DEMO_DONE` | demonstrator → team-lead | Video attached (or path in worktree) |
+| `DEMO_SKIPPED` | demonstrator → team-lead | Nothing honest to film |
 | `BLOCKED` | anyone → owner | Cannot proceed without Tim |
-| `DONE` | team-lead → manager | Draft PR up or abandoned |
+| `DONE` | team-lead → manager | Draft PR up (plus video or skip reason) |
 
 ## Memo body (`HANDOFF.md`)
 
@@ -96,8 +98,9 @@ Optional Beads log (not the ready-graph): if `BEAD` is set and `bd` works, the s
 # HANDOFF AB#<ADO>
 token: WORKER_DONE
 from: worker-20516-1
-status: draft-pr | landed | blocked | abandoned | plan-approved | needs-work
+status: draft-pr | landed | blocked | abandoned | plan-approved | needs-work | demo-done | demo-skipped
 pr:
+video:
 branch: feature/<ADO>-<slug>
 what-landed:
 left:
@@ -122,8 +125,9 @@ Treat the newest handoff file as the signal.
 
 ## Cleanup
 
-Team-lead closes finished workers/reviewers (not itself, not manager):
+Team-lead closes finished workers/reviewers/demonstrators (not itself, not manager):
 
 ```bash
 ~/.cursor/skills/ado-crew-signal/scripts/cleanup-agent.sh worker-21024-1
+# or reviewer-21024-1 / demonstrator-21024-1
 ```

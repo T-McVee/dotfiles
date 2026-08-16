@@ -2,10 +2,10 @@
 name: ado-crew-team-lead
 description: >
   Owns one ADO ticket in a shared Herdr worktree for ado-crew. Drafts OpenSpec,
-  spawns reviewer then worker, consumes memos, retries mechanical gaps, opens
-  draft PR via the worker. Use when named team-lead-<ADO>, assigned a ticket by
-  the ado-crew manager, or the user says "be the team-lead". Does not write
-  product code. Distinct from herdr-implementer.
+  spawns reviewer then worker, then a demonstrator after the draft PR. Use when
+  named team-lead-<ADO>, assigned a ticket by the ado-crew manager, or the user
+  says "be the team-lead". Does not write product code. Distinct from
+  herdr-implementer.
 ---
 
 # ado-crew team-lead
@@ -45,7 +45,9 @@ draft OpenSpec
           → BLOCKED to manager
         good enough
           → CREATE_DRAFT_PR to the worker that just finished (or a fresh ship worker)
-  → worker returns PR URL → DONE to manager
+  → worker returns PR URL
+  → spawn demonstrator (one pass)
+  → DEMO_DONE | DEMO_SKIPPED → DONE to manager (include PR + video or skip reason)
 ```
 
 **You decide.** Reviewer memos; they do not approve merges and they do not spawn anyone.
@@ -56,6 +58,7 @@ draft OpenSpec
 |------|-----|------------|
 | Plan review | 3 | Intent gap → `BLOCKED` |
 | Workers | 5 | Same sensor/miss twice → `BLOCKED`; underspecified AC → `BLOCKED` immediately |
+| Demonstrator | 1 | Cannot boot UI / no honest happy path → `DEMO_SKIPPED`; do not retry |
 
 ### What “another worker” means
 
@@ -103,7 +106,7 @@ After you consume a memo: **do not prompt that agent again.** Close their pane, 
 
 ```bash
 ~/.cursor/skills/ado-crew-signal/scripts/cleanup-agent.sh worker-<ADO>-<N>
-# or reviewer-<ADO>-<N>
+# or reviewer-<ADO>-<N> / demonstrator-<ADO>-<N>
 ```
 
 Do this even if `herdr agent prompt` to you stalled — `.ticket/HANDOFF.md` is still the signal. Exception: if the next action is `CREATE_DRAFT_PR` to **that same** worker, keep them until the PR URL lands, then close. Otherwise spawn a fresh ship worker and close the old one.
@@ -112,15 +115,31 @@ Do this even if `herdr agent prompt` to you stalled — `.ticket/HANDOFF.md` is 
 
 1. Read `.ticket/HANDOFF.md` (and the prompt). A stalled inbound prompt does not skip this — poll `.ticket/handoffs/`.
 2. Glance at `git log` / `git diff main...HEAD` and last `pr-check` output — not a review essay.
-3. Decide: next reviewer, next worker, `CREATE_DRAFT_PR`, or `BLOCKED`.
+3. Decide: next reviewer, next worker, `CREATE_DRAFT_PR`, demonstrator, or `BLOCKED`.
 4. **Cleanup** the sender (`cleanup-agent.sh`) unless you are about to `CREATE_DRAFT_PR` that same worker.
 
-`CREATE_DRAFT_PR`: prompt the last worker (or a new ship worker) to load `ado-pr` and open a **draft** PR, then wait for the URL and `DONE` to `manager`.
+`CREATE_DRAFT_PR`: prompt the last worker (or a new ship worker) to load `ado-pr` and open a **draft** PR. When the URL lands, close that worker, then spawn the demonstrator. After `DEMO_DONE` or `DEMO_SKIPPED`, `DONE` to `manager` with PR URL + video (or skip reason).
+
+```bash
+herdr agent start demonstrator-<ADO>-<N> --kind "$KIND" --pane <PANE>
+herdr agent prompt demonstrator-<ADO>-<N> "$(cat <<'EOF'
+You are the demonstrator. Load ado-crew-demonstrator.
+First action: ~/.cursor/skills/ado-crew-signal/scripts/rename-agent.sh demonstrator-<ADO>-<N>
+ADO: <ADO>
+PR: <url>
+OpenSpec: openspec/changes/<change-id>/
+Film only the approved plan (one happy path + named edges). Attach to PR and work item.
+Signal team-lead-<ADO> DEMO_DONE or DEMO_SKIPPED.
+EOF
+)" --wait --timeout 120000
+```
+
+A failed or skipped demo does **not** block `DONE`. Taste review can proceed on the PR alone.
 
 ## Hard rules
 
 1. No product code. No `ado-pr` yourself.
-2. Worker and reviewer never talk to each other — only to you.
+2. Worker, reviewer, and demonstrator never talk to each other — only to you.
 3. Shared worktree / shared branch for every spawn on this ticket.
 4. Conventions live in the repo + `.ticket/context/`. You turn misses into briefs or escalate; you do not become the architect.
 5. Mail: `ado-crew-signal` only. Never `herdr agent send`, never `@manager` chat.

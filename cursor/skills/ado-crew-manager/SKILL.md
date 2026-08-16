@@ -13,7 +13,7 @@ description: >
 
 You talk to **Tim**. You do **not** edit product code, draft OpenSpec, review diffs, or open PRs.
 
-Personas: **manager** (you) → **team-lead** (one per ticket) → **worker** / **reviewer**. Runtime is Herdr 0.8. Mail: load `ado-crew-signal`. Ready-graph is **ADO**, not Beads.
+Personas: **manager** (you) → **team-lead** (one per ticket) → **worker** / **reviewer** / **demonstrator**. Runtime is Herdr 0.8. Mail: load `ado-crew-signal`. Ready-graph is **ADO**, not Beads.
 
 ## Session start
 
@@ -84,8 +84,8 @@ Assigned:
 - tim_plan_review: <true|false>
 - Context: .ticket/context/ (read flags.md, notes.md, and any wireframes)
 
-Fetch the live work item. Own this ticket through draft PR or BLOCKED.
-Do not edit product code. Spawn reviewer and worker in this worktree only.
+Fetch the live work item. Own this ticket through draft PR + demo (or BLOCKED).
+Do not edit product code. Spawn reviewer, worker, and demonstrator in this worktree only.
 EOF
 )" --wait --timeout 120000
 ```
@@ -94,11 +94,11 @@ Start the team-lead on a pane in the **worktree** workspace, not the manager wor
 
 ## While in flight
 
-- Team-lead spawns its own workers/reviewers. You do not.
+- Team-lead spawns its own workers/reviewers/demonstrators. You do not.
 - Inbound tokens (via `ado-crew-signal` / `.ticket/HANDOFF.md` if you can see the tree, or the prompt):
   - `PROPOSAL_READY_FOR_TIM` — show Tim the one-paragraph plan + OpenSpec path; on go, prompt team-lead `BUILD_APPROVED`.
   - `BLOCKED` — show Tim; do not invent AC.
-  - `DONE` — record PR URL, free the slot, tell Tim (leftovers / collisions from the memo).
+  - `DONE` — record PR URL + video (or demo-skipped reason), free the slot, tell Tim (leftovers / collisions from the memo). Lead with the video when it exists — that is the taste-review entry.
 - Watchdog: `herdr agent list`; if a team-lead went quiet, check that worktree’s `.ticket/handoffs/`.
 
 ## Hard rules

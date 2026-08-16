@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Close a finished ado-crew worker/reviewer pane.
+# Close a finished ado-crew worker/reviewer/demonstrator pane.
 # Usage: cleanup-agent.sh <agent-name>
 # Does not close team-lead or manager.
 set -euo pipefail

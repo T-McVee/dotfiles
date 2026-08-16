@@ -1,7 +1,6 @@
 {
   "env": {
-    "ENABLE_TOOL_SEARCH": "auto",
-    "ENABLE_CLAUDEAI_MCP_SERVERS": "false"
+    "ENABLE_TOOL_SEARCH": "auto"
   },
   "permissions": {
     "allow": [
@@ -23,6 +22,7 @@
     ],
     "defaultMode": "auto"
   },
+  "model": "opus[1m]",
   "disabledMcpjsonServers": [],
   "hooks": {
     "SessionStart": [
@@ -48,7 +48,6 @@
       }
     ]
   },
-  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "bash \"/Users/tim/.claude/statusline.sh\""
@@ -68,6 +67,7 @@
     }
   },
   "effortLevel": "medium",
+  "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "autoCompactEnabled": false,
   "skipAutoPermissionPrompt": true,

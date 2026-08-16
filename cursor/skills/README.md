@@ -11,7 +11,7 @@ On a new machine, after cloning dotfiles:
 
 ```bash
 mkdir -p ~/.cursor/skills
-for s in ado-crew-manager ado-crew-reviewer ado-crew-signal ado-crew-team-lead ado-crew-worker; do
+for s in ado-crew-manager ado-crew-reviewer ado-crew-signal ado-crew-team-lead ado-crew-worker ado-crew-demonstrator; do
   ln -sfn ../../dotfiles/cursor/skills/$s ~/.cursor/skills/$s
 done
 ```
