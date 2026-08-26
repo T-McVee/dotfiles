@@ -7,6 +7,8 @@ Real files live here. Other paths are links:
 
 Do not put GSD / plugin skills here — those stay in `~/.cursor/skills` as local installs.
 
+Default Cursor models per persona: `ado-crew-signal/models.json`. Spawn via `ado-crew-signal/scripts/spawn-agent.sh` so `--model` is applied.
+
 On a new machine, after cloning dotfiles:
 
 ```bash

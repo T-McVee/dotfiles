@@ -71,10 +71,12 @@ Not a reason for another worker: naming taste, “I would have split the file.�
 Split or use a free **shell** pane in **this** workspace (`herdr pane split --current --cwd "$PWD"`). Never start agents in the manager workspace.
 
 ```bash
-KIND="<same as you, or Tim's default>"
+KIND="${KIND:-cursor}"   # same kind as this pane; default cursor
 N=1   # increment per spawn; do not reuse a finished worker/reviewer name
 
-herdr agent start reviewer-<ADO>-<N> --kind "$KIND" --pane <PANE>
+# applies models.json (reviewer → glm-5.2-high when KIND=cursor)
+~/.cursor/skills/ado-crew-signal/scripts/spawn-agent.sh \
+  reviewer-<ADO>-<N> reviewer --kind "$KIND" --pane <PANE>
 herdr agent prompt reviewer-<ADO>-<N> "$(cat <<'EOF'
 You are the reviewer. Load ado-crew-reviewer.
 First action: ~/.cursor/skills/ado-crew-signal/scripts/rename-agent.sh reviewer-<ADO>-<N>
@@ -89,7 +91,9 @@ EOF
 Worker brief must point at the approved OpenSpec + `.ticket/context/` + any constraints from the last memo:
 
 ```bash
-herdr agent start worker-<ADO>-<N> --kind "$KIND" --pane <PANE>
+# applies models.json (worker → cursor-grok-4.6-high when KIND=cursor)
+~/.cursor/skills/ado-crew-signal/scripts/spawn-agent.sh \
+  worker-<ADO>-<N> worker --kind "$KIND" --pane <PANE>
 herdr agent prompt worker-<ADO>-<N> "$(cat <<'EOF'
 You are the worker. Load ado-crew-worker.
 First action: ~/.cursor/skills/ado-crew-signal/scripts/rename-agent.sh worker-<ADO>-<N>
@@ -121,7 +125,9 @@ Do this even if `herdr agent prompt` to you stalled — `.ticket/HANDOFF.md` is 
 `CREATE_DRAFT_PR`: prompt the last worker (or a new ship worker) to load `ado-pr` and open a **draft** PR. When the URL lands, close that worker, then spawn the demonstrator. After `DEMO_DONE` or `DEMO_SKIPPED`, `DONE` to `manager` with PR URL + video (or skip reason).
 
 ```bash
-herdr agent start demonstrator-<ADO>-<N> --kind "$KIND" --pane <PANE>
+# applies models.json (demonstrator → composer-2.5 when KIND=cursor)
+~/.cursor/skills/ado-crew-signal/scripts/spawn-agent.sh \
+  demonstrator-<ADO>-<N> demonstrator --kind "$KIND" --pane <PANE>
 herdr agent prompt demonstrator-<ADO>-<N> "$(cat <<'EOF'
 You are the demonstrator. Load ado-crew-demonstrator.
 First action: ~/.cursor/skills/ado-crew-signal/scripts/rename-agent.sh demonstrator-<ADO>-<N>
@@ -143,3 +149,4 @@ A failed or skipped demo does **not** block `DONE`. Taste review can proceed on 
 3. Shared worktree / shared branch for every spawn on this ticket.
 4. Conventions live in the repo + `.ticket/context/`. You turn misses into briefs or escalate; you do not become the architect.
 5. Mail: `ado-crew-signal` only. Never `herdr agent send`, never `@manager` chat.
+6. Spawn with `spawn-agent.sh` so the persona model from `models.json` is applied. Do not call `herdr agent start` directly.

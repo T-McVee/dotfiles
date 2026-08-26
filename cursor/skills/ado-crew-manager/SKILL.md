@@ -29,6 +29,8 @@ Only tell Tim the pane is named `manager` if the helper printed `OK` **and** the
 
 Ask Tim for `KIND` if unknown (`cursor` / `claude` / `codex`). Default `cursor`.
 
+Expected model for this pane: **composer-2.5**. You cannot switch it mid-session. If you were started on something else, say so once and continue — do not relaunch yourself.
+
 ## Dispatch
 
 1. Tim names tickets or says “work the board.”
@@ -70,9 +72,9 @@ Materialise context **before** starting the agent — write into the **worktree*
 Copy any files/images Tim dropped in this chat into `.ticket/context/`. Also comment or attach on the ADO item when practical.
 
 ```bash
-herdr agent start team-lead-<ADO_ID> \
-  --kind "$KIND" \
-  --pane <WORKTREE_ROOT_PANE_ID>
+# applies models.json (team-lead → cursor-grok-4.6-medium when KIND=cursor)
+~/.cursor/skills/ado-crew-signal/scripts/spawn-agent.sh \
+  team-lead-<ADO_ID> team-lead --kind "$KIND" --pane <WORKTREE_ROOT_PANE_ID>
 
 herdr agent prompt team-lead-<ADO_ID> "$(cat <<'EOF'
 You are the team-lead. Load ado-crew-team-lead.
@@ -81,8 +83,10 @@ Assigned:
 - ADO: <ADO_ID>
 - Title: <TITLE>
 - Branch: feature/<ADO_ID>-<slug>
+- KIND: <cursor|claude|codex>
 - tim_plan_review: <true|false>
 - Context: .ticket/context/ (read flags.md, notes.md, and any wireframes)
+- Spawn children with ado-crew-signal spawn-agent.sh (models.json). Do not herdr agent start.
 
 Fetch the live work item. Own this ticket through draft PR + demo (or BLOCKED).
 Do not edit product code. Spawn reviewer, worker, and demonstrator in this worktree only.
@@ -109,3 +113,4 @@ Start the team-lead on a pane in the **worktree** workspace, not the manager wor
 4. `herdr agent prompt --wait` only — never `agent send`, never `@team-lead` chat.
 5. Do not use `herdr-manager` / Beads `bd ready` as the spawn key.
 6. Unblock of a dependent ticket is Tim merging (or Tim saying “stack”). You re-read ADO next turn.
+7. Spawn team-leads with `spawn-agent.sh` so `models.json` applies. Do not call `herdr agent start` directly.

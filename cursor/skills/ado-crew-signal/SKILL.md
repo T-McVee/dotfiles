@@ -37,6 +37,32 @@ Ready-graph: a ticket is blocked if a **predecessor** relation points at an item
 
 Do **not** use `herdr agent send`. Do **not** overwrite `herdr-signal` (that skill still targets Herdr’s bead manager).
 
+## Default models (`--kind cursor`)
+
+Slugs live in `ado-crew-signal/models.json`. Spawn with the helper so `--model` is applied — do not call `herdr agent start` directly.
+
+| Persona | Cursor slug |
+|---------|-------------|
+| manager | `composer-2.5` |
+| team-lead | `cursor-grok-4.6-medium` |
+| reviewer | `glm-5.2-high` |
+| worker | `cursor-grok-4.6-high` |
+| demonstrator | `composer-2.5` |
+
+```bash
+~/.cursor/skills/ado-crew-signal/scripts/spawn-agent.sh \
+  team-lead-<ADO> team-lead --kind cursor --pane <PANE>
+# override: add --model <slug>
+```
+
+Non-cursor kinds get no `--model` unless you pass one. Tim’s chat override wins over the file.
+
+The **manager** pane is started by Tim, not spawned. Start it as:
+
+```bash
+herdr agent start manager --kind cursor --pane <PANE> -- --model composer-2.5
+```
+
 ## Inbox names
 
 | Sender | Target |
