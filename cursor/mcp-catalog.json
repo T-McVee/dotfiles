@@ -1,0 +1,37 @@
+{
+  "mcpServers": {
+    "azure-devops": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@azure-devops/mcp",
+        "Mojo-Soup"
+      ]
+    },
+    "ag-mcp": {
+      "command": "npx",
+      "args": [
+        "ag-mcp"
+      ]
+    },
+    "Playwright": {
+      "command": "npx @playwright/mcp@latest",
+      "env": {}
+    },
+    "browser-tools": {
+      "command": "npx @agentdeskai/browser-tools-mcp@1.2.0",
+      "env": {}
+    },
+    "Figma": {
+      "url": "https://mcp.figma.com/mcp",
+      "headers": {}
+    },
+    "fireflies": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://api.fireflies.ai/mcp"
+      ]
+    }
+  }
+}
