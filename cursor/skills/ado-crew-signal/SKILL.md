@@ -151,9 +151,17 @@ Treat the newest handoff file as the signal.
 
 ## Cleanup
 
-Team-lead closes finished workers/reviewers/demonstrators (not itself, not manager):
+Team-lead closes finished workers/reviewers/demonstrators (not itself, not manager). Scripts kill the pane's **process group and descendant tree** before `herdr pane close` — do not close panes by hand.
 
 ```bash
 ~/.cursor/skills/ado-crew-signal/scripts/cleanup-agent.sh worker-21024-1
 # or reviewer-21024-1 / demonstrator-21024-1
 ```
+
+After `DONE` (PR + demo), sweep the ticket workspace so **only the team-lead remains** for Tim's taste review:
+
+```bash
+~/.cursor/skills/ado-crew-signal/scripts/cleanup-workspace-members.sh team-lead-21024
+```
+
+**Spawn rule:** fresh agent per phase — plan reviewer, build worker, branch reviewer, ship worker, and demonstrator are separate panes with incrementing `-N`. Never re-prompt a finished agent; cleanup then spawn new.

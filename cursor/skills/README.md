@@ -1,5 +1,7 @@
 # Cursor skills (source)
 
+Global MCP config: see [../README.md](../README.md).
+
 Real files live here. Other paths are links:
 
 - `~/.cursor/skills/ado-crew-*` → these directories

@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 # Close a finished ado-crew worker/reviewer/demonstrator pane.
+# Kills the pane's process group and descendant tree before closing.
 # Usage: cleanup-agent.sh <agent-name>
 # Does not close team-lead or manager.
 set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 if [[ $# -lt 1 ]]; then
   echo "usage: cleanup-agent.sh <agent-name>" >&2
@@ -57,6 +60,7 @@ if [[ -z "$PANE" ]]; then
   exit 1
 fi
 
-echo "Closing ${NAME} pane=${PANE}"
+echo "Cleaning up ${NAME} pane=${PANE}"
+"${SCRIPT_DIR}/kill-pane-processes.sh" "$PANE" --graceful
 herdr pane close "$PANE"
 echo "OK: closed ${NAME}"
