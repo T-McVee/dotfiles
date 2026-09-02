@@ -59,9 +59,13 @@ After the first successful `create-note`, persist `noteId`. Every later send is 
 1. Read `state.md`.
 2. List Raycast notes and select every note whose `updatedAt` is later than `lastSyncAt`.
    - If `lastSyncAt` is empty (first run), fall back to notes updated in the last 24 hours. Do not export the entire Raycast library on a first run; the vault has no snapshots yet and would have to reason about everything at once.
-3. For each selected note, read it and write `inbox/<slug>.md`, where `<slug>` is the note title in kebab-case (`TODO - MAIN` becomes `todo-main.md`, `Daily note` becomes `daily-note.md`).
+3. For each selected note, read it and write `inbox/<slug>.md`.
 
-   The slug must be stable across runs, because the vault diffs each inbox file against `notes/.raycast-snapshots/<slug>.md` to find what changed. An unstable slug reads as a brand new note and loses the diff.
+   **If the note's id matches `state.noteId`, the slug is always `daily-note`, whatever the note is titled.** That note is the pinned card this loop overwrites every morning, and Raycast titles a note from its first line, which is the card's `# YYYY-MM-DD` heading. So its title changes daily. Keying its slug off the id instead of the title is the only way it stays stable.
+
+   For every other note the slug is the title in kebab-case (`TODO - MAIN` becomes `todo-main.md`, `DevCop '26` becomes `devcop-26.md`).
+
+   Slug stability is the load-bearing property here. The vault diffs each inbox file against `notes/.raycast-snapshots/<slug>.md` to find what changed, so a slug that drifts reads as a brand new note, loses the diff, and re-imports content that was already filed. Duplicated todos in a project file are tedious to unpick by hand.
 
 ```markdown
 ---
@@ -80,9 +84,10 @@ status: pending
 
 `kind` is a routing hint for the vault, guessed from the title:
 
-| Title looks like | `kind` |
+| Note | `kind` |
 |---|---|
-| `Daily note`, `Today` | `daily` |
+| Id matches `state.noteId` (the pinned card) | `daily` |
+| Titled `Daily note`, `Today`, or a bare `YYYY-MM-DD` | `daily` |
 | Matches a file in `notes/projects/` | `project` |
 | `TODO - MAIN` or another long-lived list | `standing-list` |
 | Anything else | `unknown` |
@@ -109,7 +114,7 @@ Do not duplicate any of that logic here, and do not process the inbox yourself. 
 1. Read `outbox/daily-note.md`. If it does not exist, the vault briefing did not finish. Stop.
 2. If `status` is not `pending`, the card has already been sent. Stop.
 3. Body to send is the outbox file minus its frontmatter.
-4. If `state.noteId` is empty, **search Raycast by title for `Daily note` (or `Today`) before creating anything.**
+4. If `state.noteId` is empty, **search Raycast by title before creating anything**, trying `Daily note`, `Today`, and any bare `YYYY-MM-DD` title (a card created by an earlier run will have been renamed to its own H1 date).
    - Found: adopt that id, save it to `state.md`, and treat this as a replace (step 5).
    - Genuinely absent: `create-note` with title `Daily note` and the slim body, save the returned `noteId` to `state.md`, and tell the user to pin it (`⇧⌘P`) so it lands on `⌘0`.
 
@@ -134,7 +139,7 @@ Anything the user typed under `## Capture` before this step ran was already expo
 | Outbox missing after Step 2 | Vault briefing did not complete. Stop, leave Raycast alone |
 | Outbox `pending` but replace fails | Leave `pending`; Raycast unchanged; inbox already safe |
 | Re-run the same morning | Nothing new since `lastSyncAt`, so no export. Inbox is empty, vault rewrites the card, replace sends the same or updated card |
-| `noteId` 404s | Search by title. If still missing, treat as a create, but never create a second note while a Daily note exists under any title |
+| `noteId` 404s | Search by title, including a bare `YYYY-MM-DD` title, since Raycast renames the card from its H1 each time it is replaced. If still missing, treat as a create, but never create a second note while a card exists under any title |
 | Inbox not empty at Step 3 | The vault could not process something. Report it, do not clear it yourself |
 
 ## Out of scope
