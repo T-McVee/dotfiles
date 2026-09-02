@@ -1,13 +1,13 @@
 ---
 name: raycast-daily-briefing
-description: Morning briefing from Raycast. Export every Raycast note touched since the last sync into the Obsidian inbox, run the vault daily-briefing (which processes that inbox and may wrap yesterday), then replace the pinned Raycast Daily note with the slim card the vault produced. Use when the user says "/daily-briefing", "daily briefing", "brief me", "start my day", or wants the Raycast Daily note refreshed from the second brain. Requires Raycast Notes tools.
+description: Morning briefing from Raycast. Export every Raycast note touched since the last sync into the Obsidian inbox, run the vault daily-briefing (which processes that inbox and may wrap yesterday), then replace the pinned Raycast Daily note with the day card the vault produced. Use when the user says "/daily-briefing", "daily briefing", "brief me", "start my day", or wants the Raycast Daily note refreshed from the second brain. Requires Raycast Notes tools.
 ---
 
 # Raycast Daily Briefing
 
 Orchestrates the morning loop between Raycast Notes and the Obsidian second brain.
 
-The split matters: **this skill owns Raycast I/O and nothing else.** It is deliberately dumb. It copies whole notes out of Raycast into `inbox/` and copies one slim card back in. It does not decide what any of that content means, because the Raycast Notes API can only ever hand back a full note, never a diff. Working out what is actually new is the vault's job, and the vault has the project files and git history needed to do it. Resist the urge to be clever here.
+The split matters: **this skill owns Raycast I/O and nothing else.** It is deliberately dumb. It copies whole notes out of Raycast into `inbox/` and copies one day card back in. It does not decide what any of that content means, because the Raycast Notes API can only ever hand back a full note, never a diff. Working out what is actually new is the vault's job, and the vault has the project files and git history needed to do it. Resist the urge to be clever here.
 
 The pinned Raycast note named **Daily note** is overwritten in place each morning. Dated history lives in the vault.
 
@@ -29,7 +29,7 @@ Today's date comes from system context (`currentDate`). Never infer the weekday 
 1. Export **before** briefing or Raycast replace. That is what makes a missed EOD wrap recoverable: the content is already safe on disk before anything overwrites it.
 2. Export is a full copy every time. Never try to diff, merge, or trim a note on the way out.
 3. Never write into the inbox for a note you did not just read successfully from Raycast.
-4. Vault Briefing and Learning prose never round-trip through Raycast. Only the slim card goes back.
+4. Vault Briefing and Learning prose never round-trip through Raycast. Only the day card goes back.
 5. Raycast replace is **last**, and only after the export succeeded.
 6. Only advance `lastSyncAt` once the export files are confirmed on disk. An over-eager timestamp silently loses a day of captures, which is the worst failure this loop has.
 7. If Raycast Notes tools are unavailable, stop. Do not invent a Daily note body.
@@ -103,7 +103,7 @@ Guess cheaply and move on. The vault reads the content and overrides you when yo
 
 Read and follow `/Users/tim/Documents/Obsidian/.claude/skills/daily-briefing/SKILL.md` in full.
 
-That skill owns everything from here until the outbox exists. It processes the inbox and clears it (its Step 0), wraps the prior day if it has no `### Summary`, archives prior-month dailies, runs the check-in, writes today's daily note, and writes the slim card to `outbox/daily-note.md`.
+That skill owns everything from here until the outbox exists. It processes the inbox and clears it (its Step 0), wraps the prior day if it has no `### Summary`, archives prior-month dailies, runs the check-in, writes today's daily note, and writes the day card to `outbox/daily-note.md`.
 
 Do not duplicate any of that logic here, and do not process the inbox yourself. Keep the check-in, and do not skip it to "just sync notes": the check-in is the part that makes the briefing worth reading.
 
@@ -116,12 +116,12 @@ Do not duplicate any of that logic here, and do not process the inbox yourself. 
 3. Body to send is the outbox file minus its frontmatter.
 4. If `state.noteId` is empty, **search Raycast by title before creating anything**, trying `Daily note`, `Today`, and any bare `YYYY-MM-DD` title (a card created by an earlier run will have been renamed to its own H1 date).
    - Found: adopt that id, save it to `state.md`, and treat this as a replace (step 5).
-   - Genuinely absent: `create-note` with title `Daily note` and the slim body, save the returned `noteId` to `state.md`, and tell the user to pin it (`⇧⌘P`) so it lands on `⌘0`.
+   - Genuinely absent: `create-note` with title `Daily note` and the card body, save the returned `noteId` to `state.md`, and tell the user to pin it (`⇧⌘P`) so it lands on `⌘0`.
 
    An empty `noteId` means "this loop has not run before", which is not the same as "no Daily note exists". The user has been keeping that note by hand. Creating a second one splits their captures across two notes, and because the export in Step 1 reads by id, the half they keep typing into would stop reaching the vault entirely. Always look before you create.
 5. If `noteId` is set:
    - Read the current Raycast body
-   - `replace-text` the **entire** current body with the slim body
+   - `replace-text` the **entire** current body with the card body
    - If the replace fails because the old string does not match, stop and show both bodies. Do not create a second note; a duplicate Daily note splits the user's captures in two and is painful to unpick.
 6. Set outbox `status: sent` and `sentAt`. Leave the file in place.
 
