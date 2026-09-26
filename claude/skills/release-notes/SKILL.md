@@ -7,6 +7,14 @@ description: Generate release notes from git branch history. Use this skill when
 
 Generate concise, QA/PM-friendly release notes from the current git branch's commit history.
 
+When this is for an **ADO pull request** (`ado-pr` / ado-crew `CREATE_DRAFT_PR`), do **not** write the bullets in the current session. Run the `release-notes` persona (Claude Code CLI, Sonnet 5):
+
+```bash
+~/.cursor/skills/ado-crew-signal/scripts/generate-release-notes.sh
+```
+
+This skill is the writing spec that helper follows. Interactive “write me release notes” in a Claude session may still follow the steps below.
+
 ## How it works
 
 The release notes capture all work done on the current feature or bug branch since it diverged from `main`. The audience is QA teams and PMs — they care about *what changed* from a user/system perspective, not implementation specifics.

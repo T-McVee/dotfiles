@@ -91,27 +91,18 @@ You'll present this summary to the user at the confirmation step.
 
 ## Step 3: Generate PR body
 
-Follow the same approach as the release-notes skill to produce the PR body. Don't write a file and don't stop to ask for adjustments — that review happens at the confirmation step.
+**Release notes must be written by Claude Sonnet 5 via the `claude` CLI** — the `release-notes` persona. Do **not** author the bullets yourself (not even a first draft). Do not use Cursor, Grok, Composer, or any other model for this step.
 
 ```bash
-git log main..HEAD --oneline --no-merges
-git diff main...HEAD --stat
+~/.cursor/skills/ado-crew-signal/scripts/generate-release-notes.sh
+# optional: generate-release-notes.sh main
 ```
 
-For commits where the message is vague, read the actual diff to understand the change:
+The helper prints a markdown bullet list and, in an ado-crew worktree, writes `.ticket/release-notes.md`. Use that list as the PR body bullets. Don't stop to ask for adjustments — that review happens at the confirmation step.
 
-```bash
-git show <sha> --stat
-```
+If `claude` is missing, unauthenticated, or the helper exits non-zero: **stop**. Surface the error. Do not silently write the notes.
 
-For each commit (or logical group), identify _what changed_ from a user or system perspective — not implementation details:
-
-- Good: "Added validation to the signup form for email and password fields"
-- Bad: "Added validateInput() to SignupForm.tsx with regex checks"
-
-Compose a bullet list, grouped logically. No categories, no extra headers. Keep bullets brief — one line each.
-
-The QA results section (built in step 2) will be appended after the release notes. The final body format is:
+You still build the QA table (step 2) yourself and append it after the bullets. The final body format is:
 
 ```markdown
 - First change
@@ -224,3 +215,4 @@ After creation, show the PR URL from the output.
 - **ADO CLI prerequisite** — requires the Azure CLI with the `azure-devops` extension (`az extension add --name azure-devops`) and an active login (`az login`). If the command fails for auth or config reasons, surface the error clearly.
 - **Missing tools** — if `pr-check.yaml` references a tool that isn't installed (e.g., `eslint` not found), note it in the QA summary rather than failing the whole step.
 - **See `references/pr-check-example.yaml`** for guidance on writing a `pr-check.yaml` file for your project.
+- **Release notes** — always `generate-release-notes.sh` (Claude CLI / Sonnet 5). Never author PR bullets in this session.
