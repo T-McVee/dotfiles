@@ -2,7 +2,8 @@
 # Start an ado-crew agent with the default Cursor model for its persona.
 # Usage:
 #   spawn-agent.sh <name> <persona> --kind <kind> --pane <id> [--model <slug>] [-- extra]
-# persona: manager | team-lead | reviewer | worker | demonstrator
+# persona: manager | team-lead | reviewer | worker | demonstrator | interrogator
+# release-notes is a claude CLI persona — use generate-release-notes.sh, not this script.
 # --model on this command (or after --) overrides models.json.
 # Non-cursor kinds get no --model unless you pass one.
 set -euo pipefail
@@ -17,6 +18,13 @@ fi
 NAME="$1"
 PERSONA="$2"
 shift 2
+
+case "$PERSONA" in
+  release-notes*)
+    echo "ERROR: release-notes runs via generate-release-notes.sh (claude CLI / Sonnet 5), not herdr agent start" >&2
+    exit 2
+    ;;
+esac
 
 KIND=""
 PANE=""

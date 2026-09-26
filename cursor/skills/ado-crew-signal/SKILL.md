@@ -3,8 +3,8 @@ name: ado-crew-signal
 description: >
   Cross-pane mail for ado-crew. Delivers a tokenized memo via Herdr 0.8
   `herdr agent prompt --wait` and writes `.ticket/HANDOFF.md`. Use whenever an
-  ado-crew worker, reviewer, demonstrator, or team-lead must signal another
-  persona. Do not use @mentions or `herdr agent send`.
+  ado-crew worker, reviewer, interrogator, demonstrator, or team-lead must
+  signal another persona. Do not use @mentions or `herdr agent send`.
 ---
 
 # ado-crew signal
@@ -15,39 +15,45 @@ description: >
 
 Either is sufficient. Do not require both. Do not fail a ticket because the other tool is missing.
 
-1. **Azure DevOps MCP** if this session has it (`wit_work_item`, `wit_work_item_write`, `wit_work_item_comment_write`, `wit_query`).
+1. **Azure DevOps MCP** if this session has it (`wit_work_item`, `wit_work_item_write`, `wit_query`).
 2. **`az` CLI** otherwise (or if MCP errors). Use the repo’s existing defaults (`az devops configure -l`) or the org/project on the git remote. Ask Tim only if both are unknown.
+
+**Never post a comment on an ADO work item.** No discussion thread, no “FYI”, no status note, no PR link as a comment. This applies to every persona.
+
+Forbidden: `wit_work_item_comment_write`; `az boards work-item update --discussion`; any `POST`/`PATCH` to work-item `comments` APIs; adding a `System.History` / discussion field. Reading existing comments is fine.
 
 ```bash
 # read (title, AC, state, relations)
 az boards work-item show --id <ADO> -o json
 
-# comments (if not already on the show payload)
+# comments — GET only (if not already on the show payload)
 # ORG/PROJ from `az devops configure -l` or the git remote
 az rest --method get \
   --uri "$ORG/$PROJ/_apis/wit/workItems/<ADO>/comments?api-version=7.1-preview.4"
 
-# state-only update (never rewrite description/AC)
+# state-only update (never rewrite description/AC; never --discussion)
 az boards work-item update --id <ADO> --state "<State>"
 ```
 
-MCP equivalents: `wit_work_item` action `get` with `expand: Relations` (and `list_comments`); `wit_work_item_write` for state; `wit_work_item_comment_write` to leave a comment.
+MCP equivalents: `wit_work_item` action `get` with `expand: Relations` (and `list_comments`); `wit_work_item_write` for **state only**. Do not call `wit_work_item_comment_write`.
 
 Ready-graph: a ticket is blocked if a **predecessor** relation points at an item whose state is not Done / Closed / Removed. Same check whichever tool you used.
 
 Do **not** use `herdr agent send`. Do **not** overwrite `herdr-signal` (that skill still targets Herdr’s bead manager).
 
-## Default models (`--kind cursor`)
+## Default models
 
-Slugs live in `ado-crew-signal/models.json`. Spawn with the helper so `--model` is applied — do not call `herdr agent start` directly.
+Slugs live in `ado-crew-signal/models.json`. Spawn Herdr agents with the helper so `--model` is applied — do not call `herdr agent start` directly.
 
-| Persona | Cursor slug |
-|---------|-------------|
-| manager | `composer-2.5` |
-| team-lead | `cursor-grok-4.6-medium` |
-| reviewer | `glm-5.2-high` |
-| worker | `cursor-grok-4.6-high` |
-| demonstrator | `composer-2.5` |
+| Persona | Driver | Slug |
+|---------|--------|------|
+| manager | Cursor (`--kind cursor`) | `composer-2.5` |
+| team-lead | Cursor | `grok-4.7-medium` |
+| interrogator | Cursor | `composer-2.5` |
+| reviewer | Cursor | `glm-5.2-high` |
+| worker | Cursor | `grok-4.7-high` |
+| demonstrator | Cursor | `composer-2.5` |
+| release-notes | **Claude CLI** (`cli.release-notes`) | `sonnet` (Sonnet 5) |
 
 ```bash
 ~/.cursor/skills/ado-crew-signal/scripts/spawn-agent.sh \
@@ -55,7 +61,16 @@ Slugs live in `ado-crew-signal/models.json`. Spawn with the helper so `--model` 
 # override: add --model <slug>
 ```
 
-Non-cursor kinds get no `--model` unless you pass one. Tim’s chat override wins over the file.
+Non-cursor Herdr kinds get no `--model` unless you pass one. Tim’s chat override wins over the file.
+
+**Release notes** are not a pane. `ado-pr` must run the helper (Claude subscription, not Cursor credits):
+
+```bash
+~/.cursor/skills/ado-crew-signal/scripts/generate-release-notes.sh
+# optional base branch: generate-release-notes.sh main
+```
+
+Do not write PR bullets in the worker session. Do not `spawn-agent.sh release-notes`. If `claude` is missing or the helper fails, stop — do not silently author the notes.
 
 The **manager** pane is started by Tim, not spawned. Start it as:
 
@@ -67,10 +82,11 @@ herdr agent start manager --kind cursor --pane <PANE> -- --model composer-2.5
 
 | Sender | Target |
 |--------|--------|
-| worker, reviewer, demonstrator | `team-lead-<ADO>` |
+| worker, reviewer, interrogator, demonstrator | `team-lead-<ADO>` (primary id) |
+| interrogator → manager | `manager` (`INTERVIEW_READY`) |
 | team-lead → manager | `manager` |
 | manager → team-lead | `team-lead-<ADO>` |
-| team-lead → worker / reviewer / demonstrator | `worker-<ADO>-<n>` / `reviewer-<ADO>-<n>` / `demonstrator-<ADO>-<n>` |
+| team-lead → child | `interrogator-<ADO>-<n>` / `worker-<ADO>-<n>` / `reviewer-<ADO>-<n>` / `demonstrator-<ADO>-<n>` |
 
 Names: `[a-z][a-z0-9_-]{0,31}`, unique among live agents.
 
@@ -103,20 +119,23 @@ Optional Beads log (not the ready-graph): if `BEAD` is set and `bd` works, the s
 
 | Token | From → to | Meaning |
 |-------|-----------|---------|
-| `PLAN_READY` | team-lead → reviewer | OpenSpec drafted; review plan |
-| `PLAN_REVIEW` | reviewer → team-lead | Feedback on plan (not approved) |
-| `PLAN_APPROVED` | reviewer → team-lead | Plan correct enough to build |
+| `INTERVIEW_READY` | interrogator → manager | Tim should open this pane |
+| `INTERVIEW_DONE` | interrogator → team-lead | `decisions.md` / `stories.md` on disk |
+| `INTERVIEW_SKIP` | manager → team-lead | Tim skipped grill; go to scope worker |
+| `PLAN_READY` | team-lead → reviewer | (optional) spec or chunk-plan ready |
+| `PLAN_REVIEW` | reviewer → team-lead | Feedback on chunk-plan or OpenSpec |
+| `PLAN_APPROVED` | reviewer → team-lead | Chunk-plan or OpenSpec correct enough |
 | `PROPOSAL_READY_FOR_TIM` | team-lead → manager | Opt-in only; wait for Tim |
 | `BUILD_APPROVED` | manager → team-lead | Tim said go (opt-in path only) |
-| `WORKER_ASSIGN` | team-lead → worker | Build this plan (via prompt brief; token optional) |
-| `WORKER_DONE` | worker → team-lead | Landed on branch; memo in HANDOFF |
+| `WORKER_ASSIGN` | team-lead → worker | Brief via prompt; token optional |
+| `WORKER_DONE` | worker → team-lead | Scope / spec / implement / PR; `status:` in memo |
 | `BRANCH_REVIEW` | team-lead → reviewer | Review the branch |
 | `BRANCH_REVIEW_MEMO` | reviewer → team-lead | Observations; not a merge |
-| `CREATE_DRAFT_PR` | team-lead → worker | Open draft PR (`ado-pr`) |
+| `CREATE_DRAFT_PR` | team-lead → worker | Open **one** draft PR (`ado-pr`) |
 | `DEMO_DONE` | demonstrator → team-lead | Video attached (or path in worktree) |
 | `DEMO_SKIPPED` | demonstrator → team-lead | Nothing honest to film |
 | `BLOCKED` | anyone → owner | Cannot proceed without Tim |
-| `DONE` | team-lead → manager | Draft PR up (plus video or skip reason) |
+| `DONE` | team-lead → manager | One draft PR up (plus video or skip reason) |
 
 ## Memo body (`HANDOFF.md`)
 
@@ -124,10 +143,11 @@ Optional Beads log (not the ready-graph): if `BEAD` is set and `bd` works, the s
 # HANDOFF AB#<ADO>
 token: WORKER_DONE
 from: worker-20516-1
-status: draft-pr | landed | blocked | abandoned | plan-approved | needs-work | demo-done | demo-skipped
+status: draft-pr | landed | chunk-plan | openspec-drafted | blocked | abandoned | plan-approved | needs-work | demo-done | demo-skipped | interview-done
 pr:
 video:
 branch: feature/<ADO>-<slug>
+bundle:
 what-landed:
 left:
 guesses:
@@ -151,11 +171,11 @@ Treat the newest handoff file as the signal.
 
 ## Cleanup
 
-Team-lead closes finished workers/reviewers/demonstrators (not itself, not manager). Scripts kill the pane's **process group and descendant tree** before `herdr pane close` — do not close panes by hand.
+Team-lead closes finished interrogators/workers/reviewers/demonstrators (not itself, not manager). Scripts kill the pane's **process group and descendant tree** before `herdr pane close` — do not close panes by hand. **One specialist in flight** — cleanup before the next spawn.
 
 ```bash
 ~/.cursor/skills/ado-crew-signal/scripts/cleanup-agent.sh worker-21024-1
-# or reviewer-21024-1 / demonstrator-21024-1
+# or interrogator-21024-1 / reviewer-21024-1 / demonstrator-21024-1
 ```
 
 After `DONE` (PR + demo), sweep the ticket workspace so **only the team-lead remains** for Tim's taste review:
@@ -164,4 +184,4 @@ After `DONE` (PR + demo), sweep the ticket workspace so **only the team-lead rem
 ~/.cursor/skills/ado-crew-signal/scripts/cleanup-workspace-members.sh team-lead-21024
 ```
 
-**Spawn rule:** fresh agent per phase — plan reviewer, build worker, branch reviewer, ship worker, and demonstrator are separate panes with incrementing `-N`. Never re-prompt a finished agent; cleanup then spawn new.
+**Spawn rule:** fresh agent per phase — interrogator, scope worker, chunk-plan reviewer, OpenSpec worker, openspec reviewer, implement worker, branch reviewer, ship worker, demonstrator. Incrementing `-N`. Never re-prompt a finished agent; cleanup then spawn new. Chunks are **serial**. PRs are **not** stacked.

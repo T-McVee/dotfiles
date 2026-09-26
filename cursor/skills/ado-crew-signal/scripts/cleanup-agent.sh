@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Close a finished ado-crew worker/reviewer/demonstrator pane.
+# Close a finished ado-crew interrogator/worker/reviewer/demonstrator pane.
 # Kills the pane's process group and descendant tree before closing.
 # Usage: cleanup-agent.sh <agent-name>
 # Does not close team-lead or manager.

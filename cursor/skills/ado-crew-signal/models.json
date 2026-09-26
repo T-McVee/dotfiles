@@ -2,9 +2,16 @@
   "kind": "cursor",
   "models": {
     "manager": "composer-2.5",
-    "team-lead": "cursor-grok-4.6-medium",
+    "team-lead": "grok-4.7-medium",
     "reviewer": "glm-5.2-high",
-    "worker": "cursor-grok-4.6-high",
-    "demonstrator": "composer-2.5"
+    "worker": "grok-4.7-high",
+    "demonstrator": "composer-2.5",
+    "interrogator": "composer-2.5"
+  },
+  "cli": {
+    "release-notes": {
+      "bin": "claude",
+      "model": "sonnet"
+    }
   }
 }

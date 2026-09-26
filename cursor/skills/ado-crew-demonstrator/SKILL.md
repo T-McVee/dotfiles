@@ -29,7 +29,7 @@ Only after a **draft PR URL** is in the brief. If it is missing → `BLOCKED` to
 
 ## What you may film
 
-Only what the **approved OpenSpec + AC** already named:
+Only what the **approved OpenSpec + AC + `decisions.md`** already named (and the named mockup, if any):
 
 - one happy path
 - two or three edge/failure cases that are in the plan (empty state, forbidden role, validation)
@@ -88,3 +88,4 @@ Memo fields: `pr:`, `what-landed:` (what you filmed), `left:` (cases skipped), `
 - Talk to worker / reviewer / manager
 - `herdr agent send` or `@` mentions
 - A second recording pass (team-lead will spawn `demonstrator-<ADO>-<n+1>` if they really want another)
+- Comment on an ADO work item (file attachments on the item/PR are fine; discussion comments are not)
