@@ -1,3 +1,4 @@
+onboarding = false
 # herdr config
 # Managed via dotfiles: ~/.config/herdr/config.toml is a symlink to this file.
 # Reload after editing with: herdr server reload-config
@@ -20,10 +21,23 @@ split_horizontal = "prefix+minus"
 close_pane = "prefix+_"
 
 [theme]
-name = "catppuccin"
+name = "tokyo-night"
 auto_switch = false
 
 [ui]
 pane_borders = true
 pane_gaps = true
 show_agent_labels_on_pane_borders = false
+agent_panel_sort = "priority"
+
+# Persist as much as possible across reboot / server restart.
+# resume_agents_on_restore relaunches Cursor (and other hooked agents)
+# with cursor-agent --resume <session_id>.
+[session]
+resume_agents_on_restore = true
+
+# Replay recent pane output into restored shells. Off by default because
+# pane output can include secrets; treat ~/.config/herdr/session-history.json
+# like terminal history.
+[experimental]
+pane_history = true
