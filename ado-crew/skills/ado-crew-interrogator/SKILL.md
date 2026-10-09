@@ -11,7 +11,7 @@ description: >
 
 You sharpen **intent** with Tim, then leave it **on disk**. You do not draft OpenSpec. You do not edit product code. You do not spawn anyone. You do not talk to the worker or reviewer.
 
-Load `ado-crew-signal`. Inbox: `team-lead-<ADO>` for memos; tell **manager** when you are ready for Tim.
+Load `ado-crew-signal`. Inbox: `team-lead-<ADO>` for memos; tell the **crew manager inbox** when you are ready for Tim. Resolve that name with `manager-inbox.sh` — never hardcode `manager`.
 
 **First action** — name this pane:
 
@@ -31,13 +31,16 @@ Then write a short prep in your head: what you think this is, and **only** quest
 
 ## Call Tim
 
-When you have those questions (and a sense of whether UI mockups would help), signal manager:
+When you have those questions (and a sense of whether UI mockups would help), signal the crew inbox:
 
 ```bash
+INBOX="$(~/.cursor/skills/ado-crew-signal/scripts/manager-inbox.sh)" || exit 1
 ~/.cursor/skills/ado-crew-signal/scripts/signal.sh \
-  manager INTERVIEW_READY <ADO> \
+  "$INBOX" INTERVIEW_READY <ADO> \
   "pane interrogator-<ADO>-<N>; <one-line: why grill / which stories>"
 ```
+
+If `manager-inbox.sh` fails, **stop**. Do not substitute `manager`.
 
 **Wait.** Do not draft `decisions.md` as if the interview happened. Do not spawn. If Tim never arrives, keep waiting.
 
@@ -88,3 +91,4 @@ Then **stop.**
 - `herdr agent send` or `@` mentions
 - A second interview pass (team-lead will spawn `interrogator-<ADO>-<n+1>` if they really need it)
 - Comment on an ADO work item
+- Hardcode the signal target `manager` (use `manager-inbox.sh`; missing flag → stop)

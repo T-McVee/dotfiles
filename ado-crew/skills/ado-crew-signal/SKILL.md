@@ -72,10 +72,10 @@ Non-cursor Herdr kinds get no `--model` unless you pass one. Tim’s chat overri
 
 Do not write PR bullets in the worker session. Do not `spawn-agent.sh release-notes`. If `claude` is missing or the helper fails, stop — do not silently author the notes.
 
-The **manager** pane is started by Tim, not spawned. Start it as:
+The **manager** pane is started by Tim, not spawned. Persona/model is `manager` → `composer-2.5`. The Herdr inbox is chosen at session start (`manager` only if that name is free, else `<project-slug>-manager`). Do not pass the inbox as the persona.
 
 ```bash
-herdr agent start manager --kind cursor --pane <PANE> -- --model composer-2.5
+herdr agent start <INBOX> --kind cursor --pane <PANE> -- --model composer-2.5
 ```
 
 ## Inbox names
@@ -83,17 +83,19 @@ herdr agent start manager --kind cursor --pane <PANE> -- --model composer-2.5
 | Sender | Target |
 |--------|--------|
 | worker, reviewer, interrogator, demonstrator | `team-lead-<ADO>` (primary id) |
-| interrogator → manager | `manager` (`INTERVIEW_READY`) |
-| team-lead → manager | `manager` |
+| interrogator → crew manager | `$(manager-inbox.sh)` (`INTERVIEW_READY`) |
+| team-lead → crew manager | `$(manager-inbox.sh)` |
 | manager → team-lead | `team-lead-<ADO>` |
 | team-lead → child | `interrogator-<ADO>-<n>` / `worker-<ADO>-<n>` / `reviewer-<ADO>-<n>` / `demonstrator-<ADO>-<n>` |
 
 Names: `[a-z][a-z0-9_-]{0,31}`, unique among live agents.
 
+**Crew inbox is not always `manager`.** Children read `manager_inbox` from `.ticket/context/flags.md` via `manager-inbox.sh`. If the flag is missing, **stop** — do not default to `manager` (mail would hit whichever crew registered that name first). Persona `manager` in `models.json` is the model key only.
+
 `HERDR_PANE_ID` is often unset in Cursor agent shells. Never run `herdr agent rename "$HERDR_PANE_ID" …` when that variable is empty. The helper sets **three** names (inbox, pane label, tab title — the UI still showing `1 Z` means only the inbox was renamed):
 
 ```bash
-~/.cursor/skills/ado-crew-signal/scripts/rename-agent.sh manager          # or team-lead-<ADO>
+~/.cursor/skills/ado-crew-signal/scripts/rename-agent.sh <INBOX>   # manager, mnh-manager, team-lead-<ADO>, …
 # herdr agent rename  +  herdr pane rename  +  herdr tab rename
 ```
 
@@ -106,6 +108,8 @@ From the **ticket worktree** root:
 ~/.cursor/skills/ado-crew-signal/scripts/signal.sh \
   team-lead-20516 WORKER_DONE 20516 \
   "pr-check passed; leftover: empty-state not in AC"
+# crew manager (never hardcode manager):
+# signal.sh "$(~/.cursor/skills/ado-crew-signal/scripts/manager-inbox.sh)" INTERVIEW_READY 20516 "…"
 # optional 5th arg: path to a longer memo appended under the token header
 ```
 
@@ -119,13 +123,13 @@ Optional Beads log (not the ready-graph): if `BEAD` is set and `bd` works, the s
 
 | Token | From → to | Meaning |
 |-------|-----------|---------|
-| `INTERVIEW_READY` | interrogator → manager | Tim should open this pane |
+| `INTERVIEW_READY` | interrogator → crew inbox | Tim should open this pane |
 | `INTERVIEW_DONE` | interrogator → team-lead | `decisions.md` / `stories.md` on disk |
 | `INTERVIEW_SKIP` | manager → team-lead | Tim skipped grill; go to scope worker |
 | `PLAN_READY` | team-lead → reviewer | (optional) spec or chunk-plan ready |
 | `PLAN_REVIEW` | reviewer → team-lead | Feedback on chunk-plan or OpenSpec |
 | `PLAN_APPROVED` | reviewer → team-lead | Chunk-plan or OpenSpec correct enough |
-| `PROPOSAL_READY_FOR_TIM` | team-lead → manager | Opt-in only; wait for Tim |
+| `PROPOSAL_READY_FOR_TIM` | team-lead → crew inbox | Opt-in only; wait for Tim |
 | `BUILD_APPROVED` | manager → team-lead | Tim said go (opt-in path only) |
 | `WORKER_ASSIGN` | team-lead → worker | Brief via prompt; token optional |
 | `WORKER_DONE` | worker → team-lead | Scope / spec / implement / PR; `status:` in memo |
@@ -135,7 +139,7 @@ Optional Beads log (not the ready-graph): if `BEAD` is set and `bd` works, the s
 | `DEMO_DONE` | demonstrator → team-lead | Video attached (or path in worktree) |
 | `DEMO_SKIPPED` | demonstrator → team-lead | Nothing honest to film |
 | `BLOCKED` | anyone → owner | Cannot proceed without Tim |
-| `DONE` | team-lead → manager | One draft PR up (plus video or skip reason) |
+| `DONE` | team-lead → crew inbox | One draft PR up (plus video or skip reason) |
 
 ## Memo body (`HANDOFF.md`)
 
@@ -171,7 +175,7 @@ Treat the newest handoff file as the signal.
 
 ## Cleanup
 
-Team-lead closes finished interrogators/workers/reviewers/demonstrators (not itself, not manager). Scripts kill the pane's **process group and descendant tree** before `herdr pane close` — do not close panes by hand. **One specialist in flight** — cleanup before the next spawn.
+Team-lead closes finished interrogators/workers/reviewers/demonstrators (not itself, not the crew dispatcher inbox). Scripts kill the pane's **process group and descendant tree** before `herdr pane close` — do not close panes by hand. **One specialist in flight** — cleanup before the next spawn.
 
 ```bash
 ~/.cursor/skills/ado-crew-signal/scripts/cleanup-agent.sh worker-21024-1

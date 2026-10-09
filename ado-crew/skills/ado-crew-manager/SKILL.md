@@ -17,15 +17,30 @@ Personas: **manager** (you) → **team-lead** (one per ticket **or bundle**) →
 
 ## Session start
 
-`HERDR_PANE_ID` is often **unset** in Cursor agent shells. Do not rename with an empty target. Use the helper (resolves `$HERDR_PANE_ID` or `herdr pane current --current`):
+`HERDR_PANE_ID` is often **unset** in Cursor agent shells. Do not rename with an empty target.
+
+**Inbox name is per crew.** Herdr agent names are global. A second crew that renames to `manager` steals mail from the first, or fails `agent_name_taken` and never registers.
+
+1. Choose the inbox **once**:
+   - If Tim already named it in this chat, use that.
+   - Otherwise ask once. Suggest `<project-slug>-manager` from this repo folder (lowercase, hyphens; whole name must match `[a-z][a-z0-9_-]{0,31}`).
+   - `manager` is valid **only** when Tim chooses it **and** `herdr agent get manager` shows no owner. Never silently fall through to `manager`.
+2. Rename inbox, pane, and tab (helper resolves `$HERDR_PANE_ID` or `herdr pane current --current`):
 
 ```bash
+# suggest an inbox — Tim confirms or names his own
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+SLUG="$(basename "$ROOT" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//')"
+# inbox = "${SLUG}-manager", truncated to 32 chars if needed
+
 test "${HERDR_ENV:-}" = 1 || echo "WARN: HERDR_ENV unset — Herdr CLI may still work"
-~/.cursor/skills/ado-crew-signal/scripts/rename-agent.sh manager
+~/.cursor/skills/ado-crew-signal/scripts/rename-agent.sh <INBOX>
 herdr agent list
 ```
 
-Only tell Tim the pane is named `manager` if the helper printed `OK` **and** the Herdr tab title is `manager` (not `1 Z`). The helper must run `agent rename` **and** `pane rename` **and** `tab rename`. If it errors, show the output and stop — signals will miss this inbox.
+3. Only treat this pane as the crew inbox if the helper printed `OK` **and** the printed name is `<INBOX>` **and** the Herdr tab title is `<INBOX>` (not `1 Z`). The helper must run `agent rename` **and** `pane rename` **and** `tab rename`. If rename fails (`agent_name_taken` or anything else), show the output (owning pane/cwd if present) and **stop**. Do not retry as `manager`.
+
+Remember `<INBOX>` for every spawn this session. Persona stays **manager** (composer-2.5). The inbox is only the Herdr name.
 
 Ask Tim for `KIND` if unknown (`cursor` / `claude` / `codex`). Default `cursor`.
 
@@ -71,15 +86,18 @@ WT_JSON=$(herdr worktree create \
 Materialise context **before** starting the agent — write into the **worktree** checkout:
 
 ```
-.ticket/context/flags.md      # tim_plan_review, tim_grill, primary, bundle ids
+.ticket/context/flags.md      # manager_inbox, tim_plan_review, tim_grill, primary, bundle ids
 .ticket/context/notes.md      # Tim's extra intent
 .ticket/context/              # wireframes, images, links Tim dropped
 .ticket/context/mockups/      # optional; interrogator may add more
 ```
 
+Write `manager_inbox: <INBOX>` **before** starting the team-lead. Children resolve mail from that flag. If it is missing they stop — they must not default to `manager`.
+
 `flags.md` example:
 
 ```markdown
+manager_inbox: mnh-manager
 tim_plan_review: false
 tim_grill: true
 primary: 22383
@@ -104,12 +122,14 @@ Assigned:
 - Title: <TITLE>
 - Branch: feature/<PRIMARY>-<slug>
 - KIND: <cursor|claude|codex>
+- manager_inbox: <INBOX>
 - tim_grill: <true|false>
 - tim_plan_review: <true|false>
 - PR: one draft PR linking every bundle id. Not stacked.
 - Context: .ticket/context/
 - Spawn with ado-crew-signal spawn-agent.sh. Do not herdr agent start.
 - One specialist in flight. You do not write OpenSpec, interview, or implement.
+- Signal this crew's inbox via manager-inbox.sh. Never hardcode manager.
 
 Fetch live work items. Own this assignment through one draft PR + demo (or BLOCKED).
 EOF
@@ -138,3 +158,4 @@ Start the team-lead on a pane in the **worktree** workspace, not the manager wor
 6. Unblock of a dependent **outside** the bundle is Tim merging. Inside a bundle the team-lead sequences. Do not open stacked PRs.
 7. Spawn team-leads with `spawn-agent.sh` so `models.json` applies. Do not call `herdr agent start` directly.
 8. **Never comment on an ADO work item** (no `wit_work_item_comment_write`, no `--discussion`). Read-only comments are fine.
+9. Write `manager_inbox` on every assignment. Never rename to a taken name. Never fall through to `manager` when the chosen inbox is taken.

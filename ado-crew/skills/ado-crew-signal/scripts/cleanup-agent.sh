@@ -2,7 +2,8 @@
 # Close a finished ado-crew interrogator/worker/reviewer/demonstrator pane.
 # Kills the pane's process group and descendant tree before closing.
 # Usage: cleanup-agent.sh <agent-name>
-# Does not close team-lead or manager.
+# Does not close team-lead-* or the crew dispatcher inbox
+# (manager, *-manager, or manager_inbox from flags.md).
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -13,12 +14,28 @@ if [[ $# -lt 1 ]]; then
 fi
 
 NAME="$1"
-case "$NAME" in
-  manager|team-lead-*)
-    echo "ERROR: refusing to close ${NAME}" >&2
-    exit 2
-    ;;
-esac
+
+is_dispatcher_inbox() {
+  local name="$1"
+  case "$name" in
+    manager|*-manager|team-lead-*)
+      return 0
+      ;;
+  esac
+  if [[ -f "${TICKET_DIR:-.ticket}/context/flags.md" ]]; then
+    local inbox
+    inbox="$("${SCRIPT_DIR}/manager-inbox.sh" 2>/dev/null || true)"
+    if [[ -n "$inbox" && "$name" == "$inbox" ]]; then
+      return 0
+    fi
+  fi
+  return 1
+}
+
+if is_dispatcher_inbox "$NAME"; then
+  echo "ERROR: refusing to close ${NAME}" >&2
+  exit 2
+fi
 
 json_field() {
   python3 -c '

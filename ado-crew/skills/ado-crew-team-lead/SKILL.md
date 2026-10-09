@@ -55,12 +55,31 @@ Load `ado-crew-signal`. Inbox: `team-lead-<ADO>` (`<ADO>` is the **primary** id 
 
 Only proceed if it prints `OK`.
 
+## Crew manager inbox
+
+Resolve once at startup. If the helper fails, **stop**. Do not prompt `manager` — that name may belong to another crew.
+
+```bash
+MANAGER_INBOX="$(~/.cursor/skills/ado-crew-signal/scripts/manager-inbox.sh)" || {
+  echo "manager_inbox missing from .ticket/context/flags.md — stop. Do not signal manager."
+  exit 1
+}
+```
+
+```bash
+~/.cursor/skills/ado-crew-signal/scripts/signal.sh \
+  "$MANAGER_INBOX" BLOCKED <ADO> "<why>"
+# same target for PROPOSAL_READY_FOR_TIM and DONE
+```
+
+Put `manager_inbox: <name>` in every child brief that must mail the dispatcher (interrogator).
+
 ## Startup
 
-1. Read `.ticket/context/flags.md` (grill, plan review, bundle list) and `.ticket/context/`.
+1. Read `.ticket/context/flags.md` (manager inbox, grill, plan review, bundle list) and `.ticket/context/`. Resolve `MANAGER_INBOX` via `manager-inbox.sh` — if it fails, stop.
 2. Fetch **live** ADO item(s) for the assignment — title, AC, relations, comments. Bundle: every id in `flags.md`.
-3. Predecessors **outside** the bundle that are not Done/Closed/Removed → `BLOCKED` to `manager`, stop. Predecessors **inside** the bundle are yours to sequence.
-4. If AC / intent cannot support even an interview or a scope pass → `BLOCKED` to `manager`, stop.
+3. Predecessors **outside** the bundle that are not Done/Closed/Removed → `BLOCKED` to `$MANAGER_INBOX`, stop. Predecessors **inside** the bundle are yours to sequence.
+4. If AC / intent cannot support even an interview or a scope pass → `BLOCKED` to `$MANAGER_INBOX`, stop.
 5. Spawn. Do not write the spec.
 
 **One specialist in flight.** Interrogator, worker, reviewer, demonstrator: at most **one** live besides you. Cleanup before the next spawn. No sub-teams, no parallel chunks.
@@ -105,7 +124,7 @@ else:
 when the assignment is built:
     CREATE_DRAFT_PR — **one** draft PR on this branch, link every ADO id in the bundle
     spawn demonstrator (one pass)
-    DEMO_DONE | DEMO_SKIPPED → DONE to manager
+    DEMO_DONE | DEMO_SKIPPED → DONE to $MANAGER_INBOX
 ```
 
 Chunk plan is a **map**, not a mega-spec: why split, ordered chunks, in/out per chunk, shared contracts, ADO mapping, mockup pointers. No task lists that belong in an OpenSpec. No cap on chunk count — Tim's bundle size is Tim's problem; you serialise whatever the approved plan lists.
@@ -136,11 +155,11 @@ No cap on stories in the bundle. No cap on chunks. Serialize instead.
 | `BRANCH_REVIEW_MEMO` → next worker/chunk | close branch reviewer; close prior worker if not the ship worker |
 | PR URL landed | `cleanup-agent.sh worker-<ADO>-<N>` |
 | `DEMO_DONE` / `DEMO_SKIPPED` | `cleanup-agent.sh demonstrator-<ADO>-<N>` |
-| `DONE` to manager | `cleanup-workspace-members.sh team-lead-<ADO>` — **only you remain** |
+| `DONE` to `$MANAGER_INBOX` | `cleanup-workspace-members.sh team-lead-<ADO>` — **only you remain** |
 
 **Why fresh spawns:** plan context pollutes build; MCP and test runners leak. Always `cleanup-agent.sh`; never `herdr pane close` by hand.
 
-**After `DONE`:** signal manager, then sweep. Tim keeps you for taste review.
+**After `DONE`:** signal `$MANAGER_INBOX`, then sweep. Tim keeps you for taste review.
 
 ## Spawn in this worktree only
 
@@ -163,7 +182,9 @@ Primary ADO: <ADO>
 Bundle: <ids or none>
 Context: .ticket/context/
 Interview Tim in this pane. Write interview.md, decisions.md, stories.md, optional mockups/.
-Signal manager INTERVIEW_READY when you need him. Signal team-lead-<ADO> INTERVIEW_DONE when files are on disk.
+manager_inbox: <INBOX from flags.md>
+Signal the crew inbox via manager-inbox.sh (never the literal manager) INTERVIEW_READY when you need Tim.
+Signal team-lead-<ADO> INTERVIEW_DONE when files are on disk.
 Do not draft OpenSpec. Do not edit product code.
 EOF
 )" --wait --timeout 120000
@@ -233,10 +254,11 @@ EOF
 ## Hard rules
 
 1. **Dispatcher only.** No OpenSpec. No product code. No interview. No `ado-pr`. No self-review.
-2. Specialists never talk to each other — only to you (interrogator may `INTERVIEW_READY` the manager so Tim can find the pane).
+2. Specialists never talk to each other — only to you (interrogator may `INTERVIEW_READY` the crew inbox so Tim can find the pane).
 3. Shared worktree / shared branch. **One specialist in flight.** Chunks are serial.
 4. **One PR** for the assignment. Not stacked.
 5. Mail: `ado-crew-signal` only. Never `herdr agent send`, never `@` chat.
 6. Spawn with `spawn-agent.sh`. Do not `herdr agent start` directly.
 7. If no interrogator/worker/reviewer/demonstrator is running for the step that needs one, you have skipped the crew.
 8. **Never comment on an ADO work item.** Read existing comments; do not post.
+9. Never hardcode the signal target `manager`. Use `manager-inbox.sh`. Missing flag → stop.

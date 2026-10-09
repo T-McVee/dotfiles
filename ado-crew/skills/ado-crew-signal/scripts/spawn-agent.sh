@@ -19,6 +19,9 @@ NAME="$1"
 PERSONA="$2"
 shift 2
 
+# NAME is the Herdr inbox (manager, mnh-manager, team-lead-<ADO>, …).
+# PERSONA is the models.json key. Never pass the inbox as the persona.
+
 case "$PERSONA" in
   release-notes*)
     echo "ERROR: release-notes runs via generate-release-notes.sh (claude CLI / Sonnet 5), not herdr agent start" >&2

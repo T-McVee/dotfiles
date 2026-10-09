@@ -18,6 +18,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 MODELS_FILE="${ADO_CREW_MODELS:-${SCRIPT_DIR}/../models.json}"
 
 case "$RAW" in
+  # Exact persona key only. Inbox names like mnh-manager are not models.
   manager) PERSONA=manager ;;
   team-lead*) PERSONA=team-lead ;;
   reviewer*) PERSONA=reviewer ;;

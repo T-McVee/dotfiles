@@ -14,6 +14,11 @@ fi
 
 NAME="$1"
 
+if ! [[ "$NAME" =~ ^[a-z][a-z0-9_-]{0,31}$ ]]; then
+  echo "ERROR: '${NAME}' is not a valid Herdr agent name ([a-z][a-z0-9_-]{0,31})" >&2
+  exit 2
+fi
+
 json_field() {
   python3 -c '
 import json, sys
@@ -69,7 +74,17 @@ fi
 echo "pane=${PANE} tab=${TAB:-unknown} -> ${NAME}"
 
 echo "-- agent rename (inbox)"
-herdr agent rename "$PANE" "$NAME"
+if ! herdr agent rename "$PANE" "$NAME"; then
+  echo "ERROR: agent rename to ${NAME} failed (name may be taken)" >&2
+  OWNER_JSON="$(herdr agent get "$NAME" --json 2>/dev/null || herdr agent get "$NAME" 2>/dev/null || true)"
+  if [[ -n "$OWNER_JSON" ]]; then
+    OWNER_PANE="$(printf '%s\n' "$OWNER_JSON" | json_field pane_id)"
+    echo "ERROR: agent_name_taken — ${NAME} is owned by pane ${OWNER_PANE:-unknown}" >&2
+    printf '%s\n' "$OWNER_JSON" >&2
+  fi
+  echo "Stop. Do not fall through to another inbox name." >&2
+  exit 1
+fi
 
 echo "-- pane rename (label)"
 herdr pane rename "$PANE" "$NAME"
