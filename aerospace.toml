@@ -57,6 +57,7 @@ inner.horizontal = 10
 inner.vertical =   10
 outer.left =       10
 outer.bottom =     [
+    { monitor."Logi RoomMate" = 10 },
     { monitor."U28H75x" = 70 },
     { monitor."P2419H" = 70 },
     { monitor."built-in" = 10 },
